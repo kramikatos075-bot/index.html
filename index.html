@@ -3,660 +3,841 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kelas VII-B</title>
+<title>X Spot Lagu</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a14;--card:#16162a;--card2:#1c1c35;
+  --accent:#1db954;--accent2:#1ed760;--blue:#4da6ff;
+  --text:#fff;--text2:#b3b3b3;--text3:#535353;--wa:#25D366;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);overflow-x:hidden;min-height:100%;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(29,185,84,.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(77,166,255,.08) 0%,transparent 50%);pointer-events:none;z-index:0;}
 
-body {
-  background:#08101e;
-  font-family:'Segoe UI',system-ui,sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
-}
+/* STATUS BAR */
+.statusbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:rgba(10,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);}
+.sb-brand{display:flex;align-items:center;gap:8px;}
+.sb-brand-logo{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-brand-logo svg{width:16px;height:16px;}
+.sb-brand-name{font-size:13px;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-right{display:flex;align-items:center;gap:10px;}
+.sb-time{font-size:12px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;}
+.sb-tz{font-size:9px;color:#1d4a70;letter-spacing:1px;}
+.sb-battery{display:flex;align-items:center;gap:4px;}
+.bat-body{width:22px;height:11px;border:1.5px solid var(--blue);border-radius:3px;padding:1.5px;display:flex;align-items:center;}
+.bat-fill{height:100%;background:var(--blue);border-radius:1.5px;transition:width .5s;}
+.bat-tip{width:3px;height:5px;background:var(--blue);border-radius:0 1px 1px 0;margin-left:1px;}
+.bat-pct{font-size:10px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;}
 
-/* Grid background */
-body::before {
-  content:'';
-  position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(0,120,255,0.13) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,120,255,0.13) 1px, transparent 1px);
-  background-size:40px 40px;
-  pointer-events:none;
-  z-index:0;
-}
-body::after {
-  content:'';
-  position:fixed;top:0;left:0;right:0;height:60vh;
-  background:radial-gradient(ellipse at 50% -10%, rgba(0,80,220,0.18) 0%, transparent 70%);
-  pointer-events:none;
-  z-index:0;
-}
+/* PAGES */
+.page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-bottom:140px;}
+.view{display:none;animation:fadeIn .2s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-.page {
-  position:relative;z-index:1;
-  max-width:480px;
-  margin:0 auto;
-  padding:0 0 48px;
-}
+/* HOME */
+.wa-bar{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;}
+.wa-icon{width:36px;height:36px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wa-icon svg{width:20px;height:20px;}
+.wa-num{font-size:14px;font-weight:600;color:#fff;}
 
-/* ── Fake Status Bar ── */
-.statusbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 18px 8px;
-  background:rgba(6,10,20,0.85);
-  border-bottom:1px solid rgba(0,100,220,0.2);
-  backdrop-filter:blur(8px);
-  position:sticky;top:0;z-index:100;
-}
+.album-cover{width:calc(100% - 32px);margin:0 16px 14px;aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;cursor:pointer;}
+.album-cover-art{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .3s;}
+.album-cover.spinning .album-cover-art{animation:spinSlow 8s linear infinite;}
+@keyframes spinSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.play-hint{position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(29,185,84,.5);transition:transform .15s;}
+.play-hint:active{transform:scale(.9);}
+.play-hint svg{width:20px;height:20px;margin-left:3px;}
 
-.sb-left {
-  display:flex;align-items:center;gap:8px;
-}
-.sb-logo {
-  width:28px;height:28px;border-radius:8px;
-  background:linear-gradient(135deg,#1a4fa0,#0a2060);
-  border:1px solid rgba(0,120,255,0.4);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  transition:transform .15s;
-  flex-shrink:0;
-}
-.sb-logo:active{transform:scale(0.9)}
-.sb-logo svg{width:14px;height:14px}
+/* SONG LIST */
+.songs-list{padding:0 16px;}
+.songs-list-title{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:12px;}
+.song-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s;position:relative;}
+.song-item:active,.song-item:hover{background:rgba(255,255,255,.06);}
+.song-item.playing{background:rgba(29,185,84,.1);}
+.song-item.loading-row{opacity:.6;pointer-events:none;}
+.song-thumb{width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;overflow:hidden;}
+.song-thumb .eq-anim{display:none;position:absolute;bottom:6px;gap:2px;align-items:flex-end;}
+.song-item.playing .song-thumb .eq-anim{display:flex;}
+.eq-bar{width:3px;border-radius:2px;background:var(--accent);animation:eq 1s ease-in-out infinite alternate;}
+.eq-bar:nth-child(1){height:8px;animation-delay:0s;}
+.eq-bar:nth-child(2){height:14px;animation-delay:.2s;}
+.eq-bar:nth-child(3){height:6px;animation-delay:.4s;}
+@keyframes eq{from{height:4px}to{height:16px}}
+.song-meta{flex:1;min-width:0;}
+.song-title{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.song-artist{font-size:12px;color:var(--text2);margin-top:2px;}
+.song-dur{font-size:11px;color:var(--text3);flex-shrink:0;}
+.song-item.playing .song-title{color:var(--accent);}
 
-.sb-user {
-  font-size:12px;font-weight:600;
-  color:#b8d4f5;
-  letter-spacing:.3px;
-}
+/* THUMBNAIL dari API */
+.song-thumb-img{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;}
 
-.sb-right {
-  display:flex;align-items:center;gap:10px;
-}
+/* SEARCH */
+.search-top{padding:20px 16px 10px;}
+.search-title{font-size:22px;font-weight:800;margin-bottom:16px;}
+.search-box{display:flex;align-items:center;gap:10px;background:#2a2a3a;border-radius:10px;padding:0 14px;}
+.search-box svg{width:18px;height:18px;flex-shrink:0;color:var(--text3);}
+.search-input{flex:1;border:none;background:transparent;color:var(--text);font-size:15px;padding:12px 0;outline:none;}
+.search-input::placeholder{color:var(--text3);}
+.search-go{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--accent);cursor:pointer;border:none;transition:transform .1s;flex-shrink:0;}
+.search-go:active{transform:scale(.9);}
+.search-go svg{width:16px;height:16px;}
+.search-results{padding:0 16px 20px;}
+.sr-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin:16px 0 10px;}
 
-.sb-time {
-  font-size:12px;font-weight:700;
-  color:#4da6ff;
-  letter-spacing:.5px;
-  font-variant-numeric:tabular-nums;
-  min-width:68px;
-  text-align:right;
-}
+/* LOADING SPINNER */
+.spinner{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 0;}
+.spin-ring{width:36px;height:36px;border:3px solid rgba(29,185,84,.2);border-top-color:var(--accent);border-radius:50%;animation:spinRing .8s linear infinite;}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+.spin-txt{font-size:13px;color:var(--text2);}
 
-.sb-tz {
-  font-size:9px;color:#1d4a70;
-  letter-spacing:1px;
-  margin-left:-6px;
-  margin-top:1px;
-  align-self:flex-end;
-}
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:rgba(10,10,20,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));z-index:150;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;}
+.nav-btn svg{width:22px;height:22px;transition:color .15s;}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.5px;transition:color .15s;}
+.nav-btn.active svg,.nav-btn.active .nav-label{color:var(--accent);}
+.nav-btn:not(.active) svg,.nav-btn:not(.active) .nav-label{color:var(--text3);}
 
-.sb-battery {
-  display:flex;align-items:center;gap:4px;
-}
-.bat-icon {
-  display:flex;align-items:center;gap:1px;
-}
-.bat-body {
-  width:22px;height:11px;
-  border:1.5px solid #4da6ff;
-  border-radius:3px;
-  position:relative;
-  display:flex;align-items:center;
-  padding:1.5px;
-}
-.bat-fill {
-  height:100%;
-  background:#4da6ff;
-  border-radius:1.5px;
-  transition:width .5s;
-}
-.bat-tip {
-  width:3px;height:5px;
-  background:#4da6ff;
-  border-radius:0 1px 1px 0;
-  margin-left:1px;
-}
-.bat-pct {
-  font-size:10px;font-weight:700;
-  color:#4da6ff;
-  font-variant-numeric:tabular-nums;
-  min-width:26px;
-}
+/* NOW PLAYING BAR mini */
+.np-bar{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:460px;background:#1c1c35;border:1px solid rgba(29,185,84,.25);border-radius:14px;padding:10px 14px;display:none;align-items:center;gap:10px;z-index:140;box-shadow:0 -4px 30px rgba(0,0,0,.5);animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);}
+.np-bar.show{display:flex;}
+@keyframes slideUp{from{transform:translateX(-50%) translateY(80px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+.np-cassette{width:38px;height:38px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.np-cassette-emoji{font-size:20px;}
+.np-bar.show.playing:not(.paused) .np-cassette-emoji{animation:spin 4s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.np-cassette-img{width:38px;height:38px;border-radius:8px;object-fit:cover;}
+.np-info{flex:1;min-width:0;}
+.np-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent);}
+.np-artist{font-size:11px;color:var(--text2);}
+.np-controls{display:flex;align-items:center;gap:8px;}
+.np-btn{width:32px;height:32px;border-radius:50%;background:transparent;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent;}
+.np-btn:active{background:rgba(255,255,255,.1);}
+.np-btn.play-pause{background:var(--accent);width:36px;height:36px;}
+.np-btn.play-pause:active{background:var(--accent2);}
+.np-btn svg{width:16px;height:16px;}
+.np-btn.play-pause svg{width:18px;height:18px;}
 
-/* ── Header ── */
-.header {
-  text-align:center;
-  padding:32px 20px 24px;
-}
-.welcome {
-  font-size:12px;font-weight:600;letter-spacing:3px;
-  color:#2d6ea0;text-transform:uppercase;
-  margin-bottom:8px;
-}
-.kelas-title {
-  font-size:clamp(32px,9vw,52px);
-  font-weight:900;color:#ddeeff;
-  letter-spacing:3px;line-height:1;
-  text-shadow:0 0 40px rgba(60,140,255,0.3);
-}
-.kelas-title span{color:#4da6ff;}
-.divider{
-  width:60px;height:2px;
-  background:linear-gradient(90deg,transparent,#1a6fff,transparent);
-  margin:14px auto 0;border-radius:2px;
-}
+/* POPUP from top */
+.np-popup{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);width:100%;max-width:480px;background:linear-gradient(180deg,#1a2a1a 0%,#1c1c35 100%);border-bottom:1px solid rgba(29,185,84,.3);border-radius:0 0 24px 24px;padding:calc(10px + env(safe-area-inset-top,0px)) 20px 20px;z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 40px rgba(0,0,0,.7);}
+.np-popup.open{transform:translateX(-50%) translateY(0);}
+.np-popup-drag{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 16px;cursor:pointer;}
+.np-popup-inner{display:flex;align-items:center;gap:14px;}
+.np-popup-cassette{width:52px;height:52px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;}
+.np-popup-cassette .spin-icon{font-size:28px;}
+.np-popup.show:not(.paused) .spin-icon{animation:spin 4s linear infinite;}
+.np-popup-cassette img{width:52px;height:52px;object-fit:cover;border-radius:12px;}
+.np-popup-info{flex:1;min-width:0;}
+.np-popup-title{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent);}
+.np-popup-artist{font-size:12px;color:var(--text2);margin-top:2px;}
+.np-popup-controls{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.pp-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+.pp-btn:active{background:rgba(255,255,255,.18);}
+.pp-btn.main{background:var(--accent);width:46px;height:46px;}
+.pp-btn.main:active{background:var(--accent2);}
+.pp-btn svg{width:18px;height:18px;}
+.pp-btn.main svg{width:22px;height:22px;}
+.pp-stop{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);}
+.pp-stop svg{color:#ff5050;}
+.prog-wrap{margin-top:12px;}
+.prog-bar{width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.12);position:relative;overflow:hidden;}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .5s linear;}
+.prog-times{display:flex;justify-content:space-between;margin-top:6px;}
+.prog-t{font-size:10px;color:var(--text3);}
 
-/* ── Pengurus Section ── */
-.section-label {
-  text-align:center;
-  font-size:10px;font-weight:600;letter-spacing:2.5px;
-  color:#1d4a70;text-transform:uppercase;
-  margin:28px 0 16px;
-}
+/* AUDIO ELEMENT hidden */
+audio{display:none;}
 
-/* Ketua - card besar landscape */
-.ketua-wrap {
-  margin:0 16px 16px;
-}
-.card-landscape {
-  background:#0b1828;
-  border:1px solid rgba(0,120,255,0.35);
-  border-radius:14px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:row;
-  height:140px;
-  position:relative;
-}
-.card-landscape .photo-side {
-  width:110px;flex-shrink:0;
-  background:radial-gradient(circle at 40% 40%, #0d2040, #060e1a);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:8px;
-  position:relative;
-}
-.card-landscape .photo-side::after {
-  content:'';
-  position:absolute;top:8px;right:8px;
-  width:14px;height:14px;
-  border-top:2px solid rgba(0,160,255,0.5);
-  border-right:2px solid rgba(0,160,255,0.5);
-  border-radius:0 3px 0 0;
-}
-.avatar-lg {
-  width:64px;height:64px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:800;color:#fff;
-  border:2px solid rgba(255,255,255,0.15);
-}
-.no-foto-sm {
-  font-size:8px;color:rgba(80,140,220,0.5);
-  letter-spacing:.5px;text-transform:uppercase;
-}
-.card-landscape .info-side {
-  flex:1;padding:16px 14px;
-  display:flex;flex-direction:column;justify-content:center;gap:6px;
-  border-left:1px solid rgba(0,80,180,0.2);
-}
-.jabatan-badge {
-  display:inline-block;
-  font-size:9px;font-weight:700;letter-spacing:1.5px;
-  text-transform:uppercase;
-  padding:3px 10px;border-radius:12px;
-  background:rgba(0,100,255,0.15);
-  border:1px solid rgba(0,120,255,0.3);
-  color:#4da6ff;
-  width:fit-content;
-}
-.card-nama {
-  font-size:16px;font-weight:800;color:#ddeeff;
-  line-height:1.1;
-}
-.card-umur {
-  font-size:12px;color:#2d6ea0;
-}
-.card-corner-br {
-  position:absolute;bottom:8px;right:8px;
-  width:14px;height:14px;
-  border-bottom:2px solid rgba(0,160,255,0.25);
-  border-right:2px solid rgba(0,160,255,0.25);
-  border-radius:0 0 3px 0;
-}
+/* GRADIENTS */
+.g0{background:linear-gradient(135deg,#1a0533,#2d1b6e,#0a3d7a);}
+.g1{background:linear-gradient(135deg,#0d3320,#1a6632,#0a4a4a);}
+.g2{background:linear-gradient(135deg,#4a0d1a,#8b1a3a,#3a0a2a);}
+.g3{background:linear-gradient(135deg,#2a1a00,#6b4400,#4a2200);}
+.g4{background:linear-gradient(135deg,#001a4a,#003380,#001a3a);}
+.g5{background:linear-gradient(135deg,#2a001a,#5a0d40,#1a0030);}
+.g6{background:linear-gradient(135deg,#001a1a,#005a4a,#002a2a);}
+.g7{background:linear-gradient(135deg,#1a1a00,#4a4a00,#2a2a00);}
 
-/* Wakil - card landscape lebih kecil */
-.wakil-wrap {
-  margin:0 16px 20px;
-}
-.card-landscape.wakil {
-  height:110px;
-  border-color:rgba(0,100,200,0.25);
-}
-.card-landscape.wakil .photo-side {
-  width:88px;
-  background:radial-gradient(circle at 40% 40%, #1a0d2e, #080612);
-}
-.avatar-md {
-  width:50px;height:50px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:800;color:#fff;
-  border:2px solid rgba(255,255,255,0.12);
-}
-.card-landscape.wakil .jabatan-badge {
-  background:rgba(80,0,160,0.15);
-  border-color:rgba(100,60,220,0.3);
-  color:#9b7fff;
-}
-
-/* Sekretaris & Bendahara - 2 kolom */
-.duo-wrap {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin:0 16px 20px;
-}
-.card-portrait {
-  background:#0b1828;
-  border:1px solid rgba(0,100,200,0.25);
-  border-radius:12px;
-  overflow:hidden;
-}
-.card-portrait .photo-box {
-  aspect-ratio:1;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:6px;
-  position:relative;
-  background:radial-gradient(circle at 40% 40%, #0d1f3a, #060e1a);
-}
-.card-portrait .photo-box::before {
-  content:'';position:absolute;top:6px;right:6px;
-  width:12px;height:12px;
-  border-top:2px solid rgba(0,160,255,0.4);
-  border-right:2px solid rgba(0,160,255,0.4);
-  border-radius:0 3px 0 0;
-}
-.avatar-sm {
-  width:52px;height:52px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:800;color:#fff;
-  border:2px solid rgba(255,255,255,0.12);
-}
-.card-portrait .info-box {
-  padding:8px 10px;
-  background:#07111f;
-  border-top:1px solid rgba(0,80,180,0.2);
-}
-.portrait-badge {
-  font-size:8px;font-weight:700;letter-spacing:1px;
-  text-transform:uppercase;
-  padding:2px 8px;border-radius:10px;
-  background:rgba(0,100,255,0.12);
-  border:1px solid rgba(0,120,255,0.25);
-  color:#4da6ff;
-  display:inline-block;
-  margin-bottom:4px;
-}
-.portrait-nama {
-  font-size:12px;font-weight:700;color:#b8d4f5;
-  line-height:1.2;
-}
-.portrait-umur {
-  font-size:10px;color:#1e4a70;margin-top:2px;
-}
-
-/* ── Semua Siswa ── */
-.all-title {
-  text-align:center;
-  font-size:10px;font-weight:600;letter-spacing:2.5px;
-  color:#1d4a70;text-transform:uppercase;
-  margin:8px 0 14px;
-  padding-top:20px;
-  border-top:1px solid rgba(0,80,180,0.15);
-}
-.gallery {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-  padding:0 16px;
-}
-.mini-card {
-  background:#0b1828;
-  border:1px solid rgba(0,100,200,0.22);
-  border-radius:10px;
-  overflow:hidden;
-}
-.mini-photo {
-  aspect-ratio:1;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:4px;
-  background:radial-gradient(circle at 40% 40%, #0d1a2e, #060a14);
-  position:relative;
-}
-.mini-photo::before {
-  content:'';position:absolute;top:5px;right:5px;
-  width:10px;height:10px;
-  border-top:1.5px solid rgba(0,160,255,0.35);
-  border-right:1.5px solid rgba(0,160,255,0.35);
-  border-radius:0 2px 0 0;
-}
-.avatar-xs {
-  width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:800;color:#fff;
-  border:1.5px solid rgba(255,255,255,0.1);
-}
-.mini-no {
-  font-size:7px;color:rgba(60,130,220,0.5);
-  letter-spacing:.5px;position:absolute;top:5px;left:6px;
-}
-.mini-info {
-  padding:5px 7px;background:#07111f;
-  border-top:1px solid rgba(0,80,180,0.15);
-}
-.mini-nama {
-  font-size:9px;font-weight:700;color:#90b8e0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  line-height:1.2;
-}
-.mini-umur {
-  font-size:8px;color:#1a3d60;margin-top:1px;
-}
-
-/* ── Footer ── */
-.footer {
-  text-align:center;margin-top:36px;
-  padding:16px;
-  border-top:1px solid rgba(0,80,180,0.12);
-}
-.footer p {font-size:11px;color:rgba(45,110,160,0.5);letter-spacing:1px;}
-
-/* ── Modal foto ── */
-.modal-overlay {
-  display:none;
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.85);
-  z-index:999;
-  align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-}
-.modal-overlay.show{display:flex;}
-.modal-box {
-  background:#0b1828;
-  border:1px solid rgba(0,120,255,0.4);
-  border-radius:16px;
-  padding:24px;
-  text-align:center;
-  max-width:280px;width:90%;
-}
-.modal-avatar {
-  width:100px;height:100px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:36px;font-weight:800;color:#fff;
-  border:3px solid rgba(0,160,255,0.4);
-  margin:0 auto 14px;
-}
-.modal-nama{font-size:18px;font-weight:800;color:#ddeeff;margin-bottom:4px;}
-.modal-jabatan{font-size:11px;color:#4da6ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.modal-umur{font-size:13px;color:#2d6ea0;margin-bottom:16px;}
-.modal-close {
-  display:inline-block;padding:8px 24px;
-  background:rgba(0,80,200,0.2);
-  border:1px solid rgba(0,120,255,0.3);
-  border-radius:20px;color:#4da6ff;
-  font-size:13px;cursor:pointer;
-}
-.modal-close:active{background:rgba(0,80,200,0.4);}
+/* ERROR BOX */
+.err-box{background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.3);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13px;color:#ff8080;}
 </style>
 </head>
 <body>
 
-<!-- Status Bar -->
+<!-- Hidden Audio Player -->
+<audio id="audio-player" preload="none"></audio>
+
+<!-- STATUS BAR -->
 <div class="statusbar">
-  <div class="sb-left">
-    <div class="sb-logo" onclick="openModal('random')" title="Klik untuk lihat foto">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2">
-        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-      </svg>
+  <div class="sb-brand">
+    <div class="sb-brand-logo">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.33-.64.43-.97.23-2.65-1.62-5.98-1.99-9.9-1.09-.38.09-.76-.15-.85-.53s.15-.76.53-.85c4.3-.98 7.98-.56 10.96 1.27.33.2.43.64.23.97zm1.24-2.76c-.25.4-.78.52-1.18.28-3.03-1.86-7.65-2.4-11.23-1.31-.46.14-.95-.12-1.09-.58-.14-.46.12-.95.58-1.09 4.09-1.24 9.18-.64 12.65 1.52.4.25.52.78.27 1.18zm.11-2.87c-3.63-2.16-9.62-2.36-13.08-1.3-.55.17-1.14-.15-1.31-.7s.15-1.14.7-1.31c3.98-1.21 10.6-.97 14.78 1.5.5.3.67.95.37 1.46-.29.5-.95.67-1.46.37z"/></svg>
     </div>
-    <span class="sb-user" id="sb-user">Pengguna</span>
+    <span class="sb-brand-name">X Spot Lagu</span>
   </div>
   <div class="sb-right">
     <div>
-      <div class="sb-time" id="sb-time">00:00:00</div>
+      <div class="sb-time" id="sb-time">00:00</div>
       <div class="sb-tz" id="sb-tz">WIB</div>
     </div>
     <div class="sb-battery">
-      <div class="bat-icon">
-        <div class="bat-body"><div class="bat-fill" id="bat-fill" style="width:70%"></div></div>
-        <div class="bat-tip"></div>
-      </div>
+      <div class="bat-body"><div class="bat-fill" id="bat-fill" style="width:70%"></div></div>
+      <div class="bat-tip"></div>
       <span class="bat-pct" id="bat-pct">70%</span>
     </div>
   </div>
 </div>
 
-<!-- Header -->
 <div class="page">
-  <div class="header">
-    <div class="welcome">Hai, Welcome to</div>
-    <div class="kelas-title">KELAS <span>VII-B</span></div>
-    <div class="divider"></div>
-  </div>
 
-  <!-- Ketua -->
-  <div class="section-label">Ketua Kelas</div>
-  <div class="ketua-wrap">
-    <div class="card-landscape" onclick="openModal(0)">
-      <div class="photo-side">
-        <div class="avatar-lg" style="background:#1a4fa0">RA</div>
-        <div class="no-foto-sm">tap untuk lihat</div>
+  <!-- HOME VIEW -->
+  <div class="view active" id="view-home">
+    <div class="wa-bar">
+      <div class="wa-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
       </div>
-      <div class="info-side">
-        <div class="jabatan-badge">⭐ Ketua Kelas</div>
-        <div class="card-nama">Raka Aditya</div>
-        <div class="card-umur">13 tahun</div>
+      <span class="wa-num">6285236799873</span>
+    </div>
+
+    <div class="album-cover" id="main-cover" onclick="togglePlayCurrent()">
+      <div class="album-cover-art g0" id="cover-art"></div>
+      <div class="play-hint" id="play-hint">
+        <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
       </div>
-      <div class="card-corner-br"></div>
+    </div>
+
+    <div style="padding:0 16px 16px;">
+      <div id="current-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;">— Pilih Lagu —</div>
+      <div id="current-artist" style="font-size:13px;color:var(--text2);">Ketuk lagu di bawah atau cari lewat 🔍</div>
+    </div>
+
+    <div class="songs-list">
+      <div class="songs-list-title">Lagu Trending</div>
+      <div id="song-list"></div>
     </div>
   </div>
 
-  <!-- Wakil -->
-  <div class="section-label">Wakil Ketua</div>
-  <div class="wakil-wrap">
-    <div class="card-landscape wakil" onclick="openModal(1)">
-      <div class="photo-side">
-        <div class="avatar-md" style="background:#5a1a8b">NF</div>
-        <div class="no-foto-sm">tap untuk lihat</div>
+  <!-- SEARCH VIEW -->
+  <div class="view" id="view-search">
+    <div class="search-top">
+      <div class="search-title">Cari Lagu</div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" id="search-input" placeholder="Ketik judul lagu…" autocomplete="off" inputmode="search">
+        <button class="search-go" id="search-go" onclick="doSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
-      <div class="info-side">
-        <div class="jabatan-badge" style="background:rgba(80,0,160,0.15);border-color:rgba(100,60,220,0.3);color:#9b7fff;">🔹 Wakil Ketua</div>
-        <div class="card-nama">Nadia Fitri</div>
-        <div class="card-umur">12 tahun</div>
-      </div>
-      <div class="card-corner-br"></div>
+    </div>
+    <div class="search-results" id="search-results">
+      <div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">Ketik judul lagu dan tekan →</div>
     </div>
   </div>
 
-  <!-- Sekretaris & Bendahara -->
-  <div class="section-label">Sekretaris & Bendahara</div>
-  <div class="duo-wrap">
-    <div class="card-portrait" onclick="openModal(2)">
-      <div class="photo-box">
-        <div class="avatar-sm" style="background:#0e6b4a">SR</div>
-        <div class="no-foto-sm" style="font-size:7px;color:rgba(80,140,220,0.4)">tap lihat</div>
-      </div>
-      <div class="info-box">
-        <div class="portrait-badge" style="color:#2dcfa0;border-color:rgba(0,180,120,0.3);background:rgba(0,120,80,0.15);">📝 Sekretaris</div>
-        <div class="portrait-nama">Sari Rahayu</div>
-        <div class="portrait-umur">12 tahun</div>
-      </div>
-    </div>
-    <div class="card-portrait" onclick="openModal(3)">
-      <div class="photo-box">
-        <div class="avatar-sm" style="background:#8b3a1a">BP</div>
-        <div class="no-foto-sm" style="font-size:7px;color:rgba(80,140,220,0.4)">tap lihat</div>
-      </div>
-      <div class="info-box">
-        <div class="portrait-badge" style="color:#ffb347;border-color:rgba(220,140,0,0.3);background:rgba(160,90,0,0.15);">💰 Bendahara</div>
-        <div class="portrait-nama">Budi Prasetyo</div>
-        <div class="portrait-umur">13 tahun</div>
-      </div>
-    </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-btn active" id="nav-home" onclick="switchView('home')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span class="nav-label">Beranda</span>
   </div>
-
-  <!-- Semua Siswa -->
-  <div class="all-title">Semua Siswa Kelas VII-B</div>
-  <div class="gallery" id="gallery"></div>
-
-  <div class="footer">
-    <p>KELAS VII-B &nbsp;·&nbsp; SMP NEGERI &nbsp;·&nbsp; 2026/2027</p>
+  <div class="nav-btn" id="nav-search" onclick="switchView('search')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span class="nav-label">Cari</span>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal" onclick="closeModal()">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-avatar" id="m-avatar">RA</div>
-    <div class="modal-nama" id="m-nama">Nama</div>
-    <div class="modal-jabatan" id="m-jabatan">Jabatan</div>
-    <div class="modal-umur" id="m-umur">Umur</div>
-    <div class="modal-close" onclick="closeModal()">Tutup</div>
+<!-- NP BAR mini -->
+<div class="np-bar" id="np-bar">
+  <div class="np-cassette" id="np-cassette">
+    <span class="np-cassette-emoji">📀</span>
+  </div>
+  <div class="np-info">
+    <div class="np-title" id="np-bar-title">Judul Lagu</div>
+    <div class="np-artist" id="np-bar-artist">Artis</div>
+  </div>
+  <div class="np-controls">
+    <button class="np-btn" onclick="prevSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+    <button class="np-btn play-pause" id="np-pp-btn" onclick="togglePlay()"><svg viewBox="0 0 24 24" fill="white" id="np-pp-icon"><polygon points="5,3 19,12 5,21"/></svg></button>
+    <button class="np-btn" onclick="nextSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 2.14-5.5 2.14V9.86zM16 6h2v12h-2z"/></svg></button>
+  </div>
+</div>
+
+<!-- NP POPUP (slide from top) -->
+<div class="np-popup" id="np-popup">
+  <div class="np-popup-drag" onclick="closePopup()"></div>
+  <div class="np-popup-inner">
+    <div class="np-popup-cassette" id="pp-cassette"><span class="spin-icon">📀</span></div>
+    <div class="np-popup-info">
+      <div class="np-popup-title" id="pp-title">Judul Lagu</div>
+      <div class="np-popup-artist" id="pp-artist">Artis</div>
+    </div>
+  </div>
+  <div class="np-popup-controls">
+    <button class="pp-btn pp-stop" onclick="stopSong()"><svg viewBox="0 0 24 24" fill="#ff5050"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+    <button class="pp-btn" onclick="prevSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+    <button class="pp-btn main" id="pp-main-btn" onclick="togglePlay()"><svg viewBox="0 0 24 24" fill="white" id="pp-main-icon"><polygon points="5,3 19,12 5,21"/></svg></button>
+    <button class="pp-btn" onclick="nextSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 2.14-5.5 2.14V9.86zM16 6h2v12h-2z"/></svg></button>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-times"><span class="prog-t" id="prog-cur">0:00</span><span class="prog-t" id="prog-dur">0:00</span></div>
   </div>
 </div>
 
 <script>
-// Data siswa
-const pengurus = [
-  {nama:"Raka Aditya", inisial:"RA", jabatan:"Ketua Kelas", umur:"13 tahun", warna:"#1a4fa0"},
-  {nama:"Nadia Fitri", inisial:"NF", jabatan:"Wakil Ketua", umur:"12 tahun", warna:"#5a1a8b"},
-  {nama:"Sari Rahayu", inisial:"SR", jabatan:"Sekretaris", umur:"12 tahun", warna:"#0e6b4a"},
-  {nama:"Budi Prasetyo", inisial:"BP", jabatan:"Bendahara", umur:"13 tahun", warna:"#8b3a1a"},
+// ═══════════════════════════════════════════════════
+// DATA LAGU TRENDING (fallback lokal, juga tampil di home)
+// ═══════════════════════════════════════════════════
+const localSongs = [
+  {title:"Espresso",artist:"Sabrina Carpenter",dur:175,emoji:"☕",grade:0},
+  {title:"Flowers",artist:"Miley Cyrus",dur:200,emoji:"🌸",grade:1},
+  {title:"As It Was",artist:"Harry Styles",dur:167,emoji:"🌙",grade:2},
+  {title:"Anti-Hero",artist:"Taylor Swift",dur:200,emoji:"🦋",grade:3},
+  {title:"Unholy",artist:"Sam Smith",dur:156,emoji:"🕯️",grade:4},
+  {title:"Calm Down",artist:"Rema & Selena Gomez",dur:239,emoji:"🌊",grade:5},
+  {title:"Blinding Lights",artist:"The Weeknd",dur:200,emoji:"🌃",grade:6},
+  {title:"Stay",artist:"The Kid LAROI",dur:141,emoji:"⚡",grade:7},
+  {title:"Levitating",artist:"Dua Lipa",dur:203,emoji:"🪐",grade:0},
+  {title:"Good 4 U",artist:"Olivia Rodrigo",dur:178,emoji:"💔",grade:1},
+  {title:"Dynamite",artist:"BTS",dur:199,emoji:"💥",grade:2},
+  {title:"Kiss Me More",artist:"Doja Cat",dur:208,emoji:"💋",grade:3},
+  {title:"Peaches",artist:"Justin Bieber",dur:198,emoji:"🍑",grade:4},
+  {title:"Montero",artist:"Lil Nas X",dur:137,emoji:"🎸",grade:5},
+  {title:"Watermelon Sugar",artist:"Harry Styles",dur:174,emoji:"🍉",grade:6},
 ];
 
-const siswa = [
-  {nama:"Aldi Saputra", umur:12, warna:"#1a4fa0"},
-  {nama:"Bunga Lestari", umur:13, warna:"#8b1a6b"},
-  {nama:"Cahyo Nugroho", umur:12, warna:"#0e6b4a"},
-  {nama:"Desi Kartika", umur:13, warna:"#7a2d00"},
-  {nama:"Eko Prabowo", umur:12, warna:"#2d1a8b"},
-  {nama:"Fitri Anggraini", umur:13, warna:"#1a6b6b"},
-  {nama:"Galih Santoso", umur:12, warna:"#5a1a8b"},
-  {nama:"Hana Maharani", umur:12, warna:"#8b3a1a"},
-  {nama:"Ilham Hidayat", umur:13, warna:"#1a7a3a"},
-  {nama:"Jihan Ramadhani", umur:12, warna:"#8b1a3a"},
-  {nama:"Kevin Maulana", umur:13, warna:"#1a4a7a"},
-  {nama:"Layla Nuraini", umur:12, warna:"#6b1a6b"},
-  {nama:"Mira Safitri", umur:13, warna:"#0e5a7a"},
-  {nama:"Naufal Rizki", umur:12, warna:"#7a1a4a"},
-  {nama:"Oscar Dinata", umur:13, warna:"#1a5a2a"},
-  {nama:"Putri Handayani", umur:12, warna:"#5a2a7a"},
-  {nama:"Qori Ramadhan", umur:13, warna:"#7a4a0e"},
-  {nama:"Rini Wulandari", umur:12, warna:"#1a3a7a"},
-  {nama:"Surya Pangestu", umur:13, warna:"#4a7a1a"},
-  {nama:"Tria Oktavia", umur:12, warna:"#7a1a1a"},
-  {nama:"Umar Hakim", umur:13, warna:"#1a6a4a"},
-  {nama:"Vina Aprilia", umur:12, warna:"#6a1a4a"},
-  {nama:"Wahyu Setiawan", umur:13, warna:"#2a4a7a"},
-  {nama:"Xena Nabilah", umur:12, warna:"#7a2a6a"},
-  {nama:"Yoga Pratama", umur:13, warna:"#1a5a7a"},
-  {nama:"Zara Safira", umur:12, warna:"#7a1a5a"},
-  {nama:"Arif Hidayat", umur:13, warna:"#3a6a1a"},
-  {nama:"Bella Rahayu", umur:12, warna:"#6a3a1a"},
-  {nama:"Chandra Wijaya", umur:13, warna:"#1a3a5a"},
-  {nama:"Diana Kartika", umur:12, warna:"#5a1a3a"},
-];
+// ═══════════════════════════════════════════════════
+// API CONFIG (dari bot play.js)
+// ═══════════════════════════════════════════════════
+const IKYY_KEY = 'kyzz';
+const API_TIMEOUT = 20000;
+const CORS = 'https://corsproxy.io/?url='; // proxy CORS buat browser
 
-const bgList = [
-  "radial-gradient(circle at 30% 30%, #0d1f3a, #060e1a)",
-  "radial-gradient(circle at 70% 30%, #1a0d2e, #080612)",
-  "radial-gradient(circle at 50% 70%, #0a1a0f, #060d08)",
-  "radial-gradient(circle at 20% 60%, #1a0a1a, #090609)",
-];
+function toSec(d) {
+  if (typeof d === 'number') return d;
+  const p = String(d || '').split(':').map(Number);
+  return p.some(isNaN) ? 0 : p.reduce((a, n) => a * 60 + n, 0);
+}
+const isUrl = x => typeof x === 'string' && /^https?:\/\//.test(x);
 
-// Build gallery
-const gallery = document.getElementById('gallery');
-siswa.forEach((s,i) => {
-  const inisial = s.nama.split(' ').map(w=>w[0]).slice(0,2).join('');
-  const bg = bgList[i % bgList.length];
-  const div = document.createElement('div');
-  div.className = 'mini-card';
-  div.onclick = () => openSiswa(s, inisial);
-  div.innerHTML = `
-    <div class="mini-photo" style="background:${bg}">
-      <div class="mini-no">#${String(i+1).padStart(2,'0')}</div>
-      <div class="avatar-xs" style="background:${s.warna}">${inisial}</div>
-    </div>
-    <div class="mini-info">
-      <div class="mini-nama">${s.nama}</div>
-      <div class="mini-umur">${s.umur} tahun</div>
-    </div>`;
-  gallery.appendChild(div);
-});
-
-// Modal
-function openModal(idx) {
-  let data;
-  if(idx === 'random') {
-    data = pengurus[Math.floor(Math.random() * pengurus.length)];
-  } else {
-    data = pengurus[idx];
-  }
-  document.getElementById('m-avatar').textContent = data.inisial;
-  document.getElementById('m-avatar').style.background = data.warna;
-  document.getElementById('m-nama').textContent = data.nama;
-  document.getElementById('m-jabatan').textContent = data.jabatan;
-  document.getElementById('m-umur').textContent = data.umur;
-  document.getElementById('modal').classList.add('show');
+function parseLoose(d) {
+  const r = d?.result || d?.data || d;
+  const first = Array.isArray(r) ? r[0] : r;
+  if (!first || typeof first !== 'object') return null;
+  const link = [first.download_url, first.audio?.url, first.audio, first.mp3,
+    first.url_audio, first.download?.url, first.download, first.dl, first.link].find(isUrl);
+  if (!link) return null;
+  return {
+    title: first.title || first.judul || first.searched_title,
+    thumbnail: first.thumbnail || first.thumb || first.image,
+    duration: Number(first.seconds) || toSec(first.duration),
+    source: first.source || first.url || first.searched_url || first.link_video,
+    audio: { url: link }
+  };
 }
 
-function openSiswa(s, inisial) {
-  document.getElementById('m-avatar').textContent = inisial;
-  document.getElementById('m-avatar').style.background = s.warna;
-  document.getElementById('m-nama').textContent = s.nama;
-  document.getElementById('m-jabatan').textContent = 'Siswa Kelas VII-B';
-  document.getElementById('m-umur').textContent = s.umur + ' tahun';
-  document.getElementById('modal').classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-}
-
-// Clock & timezone
-function updateClock() {
-  const now = new Date();
-  const off = now.getTimezoneOffset();
-  let tz = 'WIB', h = now.getHours();
-  if(off <= -480) { tz='WITA'; }
-  if(off <= -540) { tz='WIT'; }
-  const pad = n => String(n).padStart(2,'0');
-  document.getElementById('sb-time').textContent =
-    `${pad(h)}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-  document.getElementById('sb-tz').textContent = tz;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// Battery API
-if(navigator.getBattery) {
-  navigator.getBattery().then(b => {
-    function upd() {
-      const pct = Math.round(b.level * 100);
-      document.getElementById('bat-pct').textContent = pct + '%';
-      document.getElementById('bat-fill').style.width = pct + '%';
+const PLAY_APIS = [
+  {
+    name: 'xrina',
+    queries: v => [v.title + ' ' + (v.artist||''), v.title],
+    url: q => `${CORS}https://apiii-xrina.my.id/download/play?q=${encodeURIComponent(q)}`,
+    parse: parseLoose
+  },
+  {
+    name: 'ikyyxd',
+    queries: v => [v.title + ' ' + (v.artist||''), v.title],
+    url: q => `${CORS}https://api.ikyyxd.my.id/search/ytplayv2?apikey=${IKYY_KEY}&q=${encodeURIComponent(q)}`,
+    parse: d => d?.status && d.result?.audio?.url ? d.result : parseLoose(d)
+  },
+  {
+    name: 'nexray',
+    queries: v => [v.title + ' ' + (v.artist||'')],
+    url: q => `${CORS}https://api.nexray.eu.cc/downloader/ytplay?q=${encodeURIComponent(q)}`,
+    parse: d => {
+      const r = d?.result;
+      if (!d?.status || !r?.download_url) return null;
+      return { title: r.title, thumbnail: r.thumbnail, duration: r.seconds || toSec(r.duration), source: r.url, audio: { url: r.download_url } };
     }
-    upd();
-    b.addEventListener('levelchange', upd);
+  },
+  {
+    name: 'azbry',
+    queries: v => [v.title + ' ' + (v.artist||'')],
+    url: q => `${CORS}https://api.azbry.com/api/download/ytplay?q=${encodeURIComponent(q)}`,
+    parse: parseLoose
+  }
+];
+
+async function tryApi(api, video) {
+  let lastErr = new Error('kosong');
+  for (const q of api.queries(video).filter(Boolean)) {
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), API_TIMEOUT);
+      const res = await fetch(api.url(q), { signal: ctrl.signal, headers: { 'Accept': 'application/json' } });
+      clearTimeout(tid);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const parsed = api.parse(data);
+      if (parsed) return parsed;
+      lastErr = new Error('respons tidak dikenali');
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr;
+}
+
+async function getPlay(video) {
+  try { return await Promise.any(PLAY_APIS.map(api => tryApi(api, video))); }
+  catch { return null; }
+}
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let currentSong = null;      // { title, artist, thumbnail, audioUrl, dur, grade, emoji }
+let searchResults = [];      // hasil terakhir search
+let isPlaying = false;
+let progInterval = null;
+let progSeconds = 0;
+const audio = document.getElementById('audio-player');
+let loadingRowEl = null;
+
+// ═══════════════════════════════════════════════════
+// FORMAT
+// ═══════════════════════════════════════════════════
+function fmt(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+function fmtViews(n) {
+  n = Number(String(n||'').replace(/[^\d]/g,''));
+  if(!n) return '';
+  if(n>=1e6) return (n/1e6).toFixed(1)+' M views';
+  if(n>=1e3) return (n/1e3).toFixed(1)+' K views';
+  return n+' views';
+}
+
+// ═══════════════════════════════════════════════════
+// COVER ART
+// ═══════════════════════════════════════════════════
+function makeVinyl(song) {
+  const art = document.getElementById('cover-art');
+  const g = song ? (song.grade ?? 0) : 0;
+  if (song?.thumbnail) {
+    art.style.backgroundImage = `url('${song.thumbnail}')`;
+    art.style.backgroundSize = 'cover';
+    art.style.backgroundPosition = 'center';
+    art.className = 'album-cover-art';
+    art.innerHTML = '';
+  } else {
+    art.style.backgroundImage = '';
+    art.className = `album-cover-art g${g}`;
+    art.innerHTML = `
+      <div style="position:relative;width:80%;height:80%;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(255,255,255,.08);"></div>
+        <div style="position:absolute;width:70%;height:70%;border-radius:50%;border:1.5px solid rgba(255,255,255,.06);"></div>
+        <div style="position:absolute;width:40%;height:40%;border-radius:50%;border:1.5px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);"></div>
+        <div style="position:absolute;width:12%;height:12%;border-radius:50%;background:rgba(255,255,255,.2);"></div>
+        <span style="font-size:clamp(48px,14vw,72px);z-index:1;">${song?.emoji||'🎵'}</span>
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// BUILD LIST
+// ═══════════════════════════════════════════════════
+function buildLocalList() {
+  const el = document.getElementById('song-list');
+  el.innerHTML = '';
+  localSongs.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'song-item';
+    div.id = 'lsi-' + i;
+    div.onclick = () => fetchAndPlay({title:s.title, artist:s.artist, grade:s.grade, emoji:s.emoji}, div);
+    div.innerHTML = `
+      <div class="song-thumb g${s.grade}">
+        <span style="font-size:22px;z-index:1;">${s.emoji}</span>
+        <div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>
+      </div>
+      <div class="song-meta">
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+      </div>
+      <span class="song-dur">${fmt(s.dur)}</span>`;
+    el.appendChild(div);
   });
 }
 
-// Username dari device
-document.getElementById('sb-user').textContent =
-  (navigator.userAgent.match(/Android/) ? 'Android' :
-   navigator.userAgent.match(/iPhone/) ? 'iPhone' : 'Pengguna');
+function buildSearchList(results) {
+  const el = document.getElementById('sr-list');
+  if(!el) return;
+  el.innerHTML = '';
+  results.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'song-item';
+    div.id = 'sri-' + i;
+    const thumb = s.thumbnail
+      ? `<img src="${s.thumbnail}" class="song-thumb-img" onerror="this.style.display='none'">`
+      : `<div class="song-thumb g${i%8}"><span style="font-size:22px;">🎵</span><div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>`;
+    div.innerHTML = `
+      ${thumb}
+      <div class="song-meta">
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist||'YouTube'}${s.views?' · '+fmtViews(s.views):''}</div>
+      </div>
+      <span class="song-dur">${s.durText||''}</span>`;
+    div.onclick = () => fetchAndPlay(s, div);
+    el.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// FETCH & PLAY (inti: panggil API, lalu play audio)
+// ═══════════════════════════════════════════════════
+async function fetchAndPlay(video, rowEl) {
+  // set loading state di row
+  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
+  loadingRowEl = rowEl;
+  rowEl.classList.add('loading-row');
+
+  // tampilkan loading di cover
+  const art = document.getElementById('cover-art');
+  art.className = `album-cover-art g${video.grade??0}`;
+  art.style.backgroundImage = '';
+  art.innerHTML = `<div class="spinner"><div class="spin-ring"></div><div class="spin-txt">Mengambil audio…</div></div>`;
+
+  document.getElementById('current-title').textContent = video.title;
+  document.getElementById('current-artist').textContent = video.artist || 'Mencari…';
+
+  const res = await getPlay(video);
+  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
+
+  if(!res) {
+    art.innerHTML = `<div class="spinner"><div class="spin-txt" style="color:#ff8080">❌ Audio tidak ditemukan</div></div>`;
+    return;
+  }
+
+  // Siapkan data lagu
+  const song = {
+    title: res.title || video.title,
+    artist: video.artist || '',
+    thumbnail: res.thumbnail || video.thumbnail || null,
+    audioUrl: res.audio.url,
+    dur: res.duration || video.dur || 0,
+    grade: video.grade ?? 0,
+    emoji: video.emoji || '🎵'
+  };
+
+  currentSong = song;
+  startPlay(song);
+}
+
+// ═══════════════════════════════════════════════════
+// AUDIO PLAYER
+// ═══════════════════════════════════════════════════
+function startPlay(song) {
+  // set audio
+  audio.src = song.audioUrl;
+  audio.load();
+  audio.play().catch(() => {});
+  isPlaying = true;
+
+  // cover
+  makeVinyl(song);
+  document.getElementById('main-cover').classList.add('spinning');
+  document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
+
+  // info
+  document.getElementById('current-title').textContent = song.title;
+  document.getElementById('current-artist').textContent = song.artist;
+
+  // NP bar
+  const bar = document.getElementById('np-bar');
+  bar.classList.add('show'); bar.classList.remove('paused');
+  document.getElementById('np-bar-title').textContent = song.title;
+  document.getElementById('np-bar-artist').textContent = song.artist;
+
+  // NP bar cassette (gambar jika ada thumb)
+  const cas = document.getElementById('np-cassette');
+  if(song.thumbnail) cas.innerHTML = `<img src="${song.thumbnail}" class="np-cassette-img" onerror="this.outerHTML='<span class=np-cassette-emoji>📀</span>'">`;
+  else cas.innerHTML = `<span class="np-cassette-emoji">📀</span>`;
+
+  // Popup
+  document.getElementById('pp-title').textContent = song.title;
+  document.getElementById('pp-artist').textContent = song.artist;
+  document.getElementById('prog-dur').textContent = song.dur ? fmt(song.dur) : '–';
+  const ppCas = document.getElementById('pp-cassette');
+  if(song.thumbnail) ppCas.innerHTML = `<img src="${song.thumbnail}" onerror="this.outerHTML='<span class=spin-icon>📀</span>'" style="width:52px;height:52px;object-fit:cover;border-radius:12px;">`;
+  else ppCas.innerHTML = `<span class="spin-icon">📀</span>`;
+  document.getElementById('np-popup').classList.add('show'); document.getElementById('np-popup').classList.remove('paused');
+  setPlayIcon(true);
+
+  showPopup();
+
+  // Progress lewat audio events
+  clearInterval(progInterval);
+  progSeconds = 0;
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-cur').textContent = '0:00';
+
+  audio.ontimeupdate = () => {
+    const cur = Math.floor(audio.currentTime);
+    const dur = Math.floor(audio.duration) || song.dur || 1;
+    document.getElementById('prog-fill').style.width = ((cur/dur)*100) + '%';
+    document.getElementById('prog-cur').textContent = fmt(cur);
+    document.getElementById('prog-dur').textContent = fmt(Math.floor(audio.duration)||song.dur||0);
+    progSeconds = cur;
+  };
+  audio.onended = () => nextFromList();
+
+  // highlight list
+  document.querySelectorAll('.song-item').forEach(el => el.classList.remove('playing'));
+  if(loadingRowEl) loadingRowEl.classList.add('playing');
+
+  // update semua np-cassette-emoji animation
+  refreshCassetteAnim();
+}
+
+function refreshCassetteAnim() {
+  // Biar animasi spin hanya jalan saat playing
+  const bar = document.getElementById('np-bar');
+  bar.classList.toggle('paused', !isPlaying);
+  document.getElementById('np-popup').classList.toggle('paused', !isPlaying);
+}
+
+// ═══════════════════════════════════════════════════
+// KONTROL
+// ═══════════════════════════════════════════════════
+function togglePlay() {
+  if(!currentSong) return;
+  if(isPlaying) {
+    audio.pause(); isPlaying = false;
+    document.getElementById('main-cover').classList.remove('spinning');
+    document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`;
+  } else {
+    audio.play().catch(()=>{}); isPlaying = true;
+    document.getElementById('main-cover').classList.add('spinning');
+    document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
+  }
+  setPlayIcon(isPlaying);
+  refreshCassetteAnim();
+}
+
+function togglePlayCurrent() {
+  if(!currentSong) {
+    // play random dari local list
+    const s = localSongs[Math.floor(Math.random()*localSongs.length)];
+    fetchAndPlay({title:s.title,artist:s.artist,grade:s.grade,emoji:s.emoji}, document.getElementById('lsi-0')||document.body);
+  } else { togglePlay(); }
+}
+
+function stopSong() {
+  audio.pause(); audio.src='';
+  isPlaying = false; currentSong = null; progSeconds = 0;
+  document.getElementById('main-cover').classList.remove('spinning');
+  document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`;
+  document.getElementById('np-bar').classList.remove('show');
+  document.getElementById('current-title').textContent = '— Pilih Lagu —';
+  document.getElementById('current-artist').textContent = 'Ketuk lagu di bawah atau cari lewat 🔍';
+  document.querySelectorAll('.song-item').forEach(el=>el.classList.remove('playing'));
+  makeVinyl(null);
+  setPlayIcon(false); closePopup();
+  document.getElementById('np-popup').classList.remove('show');
+}
+
+function nextFromList() {
+  // coba next dari search results dulu, lalu local
+  if(searchResults.length > 0 && loadingRowEl) {
+    const id = loadingRowEl.id;
+    if(id.startsWith('sri-')) {
+      const idx = parseInt(id.replace('sri-',''));
+      const next = searchResults[idx+1];
+      if(next) { const el=document.getElementById('sri-'+(idx+1)); fetchAndPlay(next,el||document.body); return; }
+    }
+  }
+  const id = loadingRowEl?.id||'';
+  if(id.startsWith('lsi-')) {
+    const idx=parseInt(id.replace('lsi-',''));
+    const next=localSongs[(idx+1)%localSongs.length];
+    const el=document.getElementById('lsi-'+((idx+1)%localSongs.length));
+    fetchAndPlay({title:next.title,artist:next.artist,grade:next.grade,emoji:next.emoji},el||document.body);
+  }
+}
+
+function prevSong() {
+  if(audio.currentTime > 3) { audio.currentTime=0; return; }
+  const id = loadingRowEl?.id||'';
+  if(id.startsWith('sri-')) {
+    const idx=parseInt(id.replace('sri-',''));
+    const prev=searchResults[Math.max(0,idx-1)];
+    const el=document.getElementById('sri-'+Math.max(0,idx-1));
+    fetchAndPlay(prev,el||document.body);
+  } else if(id.startsWith('lsi-')) {
+    const idx=parseInt(id.replace('lsi-',''));
+    const pi=(idx-1+localSongs.length)%localSongs.length;
+    const prev=localSongs[pi];
+    const el=document.getElementById('lsi-'+pi);
+    fetchAndPlay({title:prev.title,artist:prev.artist,grade:prev.grade,emoji:prev.emoji},el||document.body);
+  }
+}
+
+function nextSong() {
+  if(audio.currentTime > 0) audio.currentTime = audio.duration-0.1;
+  else nextFromList();
+}
+
+function setPlayIcon(pl) {
+  const ic = pl
+    ? `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`
+    : `<polygon points="5,3 19,12 5,21"/>`;
+  document.getElementById('np-pp-icon').innerHTML = ic;
+  document.getElementById('pp-main-icon').innerHTML = ic;
+}
+
+// ═══════════════════════════════════════════════════
+// POPUP
+// ═══════════════════════════════════════════════════
+let popupTimer = null;
+function showPopup() {
+  document.getElementById('np-popup').classList.add('open');
+  clearTimeout(popupTimer);
+  popupTimer = setTimeout(closePopup, 6000);
+}
+function closePopup() {
+  document.getElementById('np-popup').classList.remove('open');
+}
+document.getElementById('np-bar').addEventListener('click', function(e) {
+  if(!e.target.closest('.np-btn') && currentSong) showPopup();
+});
+
+// ═══════════════════════════════════════════════════
+// SEARCH — pakai API getPlay langsung
+// ═══════════════════════════════════════════════════
+document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+
+async function doSearch() {
+  const q = document.getElementById('search-input').value.trim();
+  const container = document.getElementById('search-results');
+  if(!q){ container.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">Ketik judul lagu dan tekan →</div>'; return; }
+
+  container.innerHTML = `<div class="spinner"><div class="spin-ring"></div><div class="spin-txt">Mencari "${q}"…</div></div>`;
+
+  // Langsung getPlay dengan query mentah, hasilnya 1 lagu
+  // Tapi kita mau tampilkan pilihan → pakai semua API paralel dan kumpulkan hasil unik
+  let results = [];
+  const seen = new Set();
+
+  // Jalankan semua API, kumpulkan semua yang berhasil
+  const promises = PLAY_APIS.map(api =>
+    (async () => {
+      for(const rawQ of api.queries({title:q, artist:''}).filter(Boolean)) {
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(()=>ctrl.abort(), API_TIMEOUT);
+          const res = await fetch(api.url(rawQ), {signal:ctrl.signal, headers:{Accept:'application/json'}});
+          clearTimeout(tid);
+          if(!res.ok) continue;
+          const data = await res.json();
+          const parsed = api.parse(data);
+          if(!parsed?.audio?.url) continue;
+          const key = parsed.title||rawQ;
+          if(seen.has(key)) continue;
+          seen.add(key);
+          results.push({
+            title: parsed.title || q,
+            artist: parsed.channel || '',
+            thumbnail: parsed.thumbnail || null,
+            dur: parsed.duration || 0,
+            durText: parsed.duration ? fmt(parsed.duration) : '',
+            audioUrl: parsed.audio.url,
+            grade: results.length % 8,
+            emoji: '🎵',
+            _ready: true,  // sudah ada audioUrl
+            _apiData: parsed
+          });
+          return; // 1 hasil per API sudah cukup
+        } catch {}
+      }
+    })()
+  );
+
+  await Promise.allSettled(promises);
+
+  if(!results.length) {
+    container.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">❌ Tidak ada hasil untuk "<b style="color:#fff">${q}</b>"<br><span style="font-size:12px;">Coba judul lain atau periksa koneksi</span></div>`;
+    return;
+  }
+
+  searchResults = results;
+  container.innerHTML = `<div class="sr-label">Hasil Pencarian (${results.length})</div><div id="sr-list"></div>`;
+
+  // Render list; klik langsung play (audioUrl sudah ada)
+  const el = document.getElementById('sr-list');
+  results.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='song-item'; div.id='sri-'+i;
+    const thumb=s.thumbnail
+      ? `<img src="${s.thumbnail}" class="song-thumb-img" onerror="this.style.display='none'">`
+      : `<div class="song-thumb g${i%8}"><span style="font-size:22px;">🎵</span><div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>`;
+    div.innerHTML=`${thumb}<div class="song-meta"><div class="song-title">${s.title}</div><div class="song-artist">${s.artist||'YouTube'}</div></div><span class="song-dur">${s.durText||''}</span>`;
+    div.onclick=()=>playReady(s,div);
+    el.appendChild(div);
+  });
+}
+
+// Play lagu yang audioUrl-nya sudah ada (dari hasil search)
+function playReady(song, rowEl) {
+  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
+  loadingRowEl = rowEl;
+  currentSong = song;
+  startPlay(song);
+}
+
+// ═══════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name==='search') setTimeout(()=>document.getElementById('search-input').focus(),200);
+}
+
+// ═══════════════════════════════════════════════════
+// CLOCK & BATTERY
+// ═══════════════════════════════════════════════════
+function updateClock(){
+  const now=new Date(),off=now.getTimezoneOffset();
+  let tz='WIB';
+  if(off<=-480) tz='WITA';
+  if(off<=-540) tz='WIT';
+  const p=n=>String(n).padStart(2,'0');
+  document.getElementById('sb-time').textContent=`${p(now.getHours())}:${p(now.getMinutes())}`;
+  document.getElementById('sb-tz').textContent=tz;
+}
+setInterval(updateClock,1000); updateClock();
+
+if(navigator.getBattery){
+  navigator.getBattery().then(b=>{
+    function upd(){
+      const pct=Math.round(b.level*100);
+      document.getElementById('bat-pct').textContent=pct+'%';
+      document.getElementById('bat-fill').style.width=pct+'%';
+      document.getElementById('bat-fill').style.background=pct<=20?'#ff4444':pct<=40?'#ffaa00':'var(--blue)';
+    }
+    upd(); b.addEventListener('levelchange',upd);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+makeVinyl(null);
+buildLocalList();
 </script>
 </body>
 </html>
