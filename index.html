@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kelas VII-B</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  background:#08101e;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Grid background */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,120,255,0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,120,255,0.13) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+body::after {
+  content:'';
+  position:fixed;top:0;left:0;right:0;height:60vh;
+  background:radial-gradient(ellipse at 50% -10%, rgba(0,80,220,0.18) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.page {
+  position:relative;z-index:1;
+  max-width:480px;
+  margin:0 auto;
+  padding:0 0 48px;
+}
+
+/* ── Fake Status Bar ── */
+.statusbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 18px 8px;
+  background:rgba(6,10,20,0.85);
+  border-bottom:1px solid rgba(0,100,220,0.2);
+  backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:100;
+}
+
+.sb-left {
+  display:flex;align-items:center;gap:8px;
+}
+.sb-logo {
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,#1a4fa0,#0a2060);
+  border:1px solid rgba(0,120,255,0.4);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:transform .15s;
+  flex-shrink:0;
+}
+.sb-logo:active{transform:scale(0.9)}
+.sb-logo svg{width:14px;height:14px}
+
+.sb-user {
+  font-size:12px;font-weight:600;
+  color:#b8d4f5;
+  letter-spacing:.3px;
+}
+
+.sb-right {
+  display:flex;align-items:center;gap:10px;
+}
+
+.sb-time {
+  font-size:12px;font-weight:700;
+  color:#4da6ff;
+  letter-spacing:.5px;
+  font-variant-numeric:tabular-nums;
+  min-width:68px;
+  text-align:right;
+}
+
+.sb-tz {
+  font-size:9px;color:#1d4a70;
+  letter-spacing:1px;
+  margin-left:-6px;
+  margin-top:1px;
+  align-self:flex-end;
+}
+
+.sb-battery {
+  display:flex;align-items:center;gap:4px;
+}
+.bat-icon {
+  display:flex;align-items:center;gap:1px;
+}
+.bat-body {
+  width:22px;height:11px;
+  border:1.5px solid #4da6ff;
+  border-radius:3px;
+  position:relative;
+  display:flex;align-items:center;
+  padding:1.5px;
+}
+.bat-fill {
+  height:100%;
+  background:#4da6ff;
+  border-radius:1.5px;
+  transition:width .5s;
+}
+.bat-tip {
+  width:3px;height:5px;
+  background:#4da6ff;
+  border-radius:0 1px 1px 0;
+  margin-left:1px;
+}
+.bat-pct {
+  font-size:10px;font-weight:700;
+  color:#4da6ff;
+  font-variant-numeric:tabular-nums;
+  min-width:26px;
+}
+
+/* ── Header ── */
+.header {
+  text-align:center;
+  padding:32px 20px 24px;
+}
+.welcome {
+  font-size:12px;font-weight:600;letter-spacing:3px;
+  color:#2d6ea0;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.kelas-title {
+  font-size:clamp(32px,9vw,52px);
+  font-weight:900;color:#ddeeff;
+  letter-spacing:3px;line-height:1;
+  text-shadow:0 0 40px rgba(60,140,255,0.3);
+}
+.kelas-title span{color:#4da6ff;}
+.divider{
+  width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,#1a6fff,transparent);
+  margin:14px auto 0;border-radius:2px;
+}
+
+/* ── Pengurus Section ── */
+.section-label {
+  text-align:center;
+  font-size:10px;font-weight:600;letter-spacing:2.5px;
+  color:#1d4a70;text-transform:uppercase;
+  margin:28px 0 16px;
+}
+
+/* Ketua - card besar landscape */
+.ketua-wrap {
+  margin:0 16px 16px;
+}
+.card-landscape {
+  background:#0b1828;
+  border:1px solid rgba(0,120,255,0.35);
+  border-radius:14px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:row;
+  height:140px;
+  position:relative;
+}
+.card-landscape .photo-side {
+  width:110px;flex-shrink:0;
+  background:radial-gradient(circle at 40% 40%, #0d2040, #060e1a);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  position:relative;
+}
+.card-landscape .photo-side::after {
+  content:'';
+  position:absolute;top:8px;right:8px;
+  width:14px;height:14px;
+  border-top:2px solid rgba(0,160,255,0.5);
+  border-right:2px solid rgba(0,160,255,0.5);
+  border-radius:0 3px 0 0;
+}
+.avatar-lg {
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;
+  border:2px solid rgba(255,255,255,0.15);
+}
+.no-foto-sm {
+  font-size:8px;color:rgba(80,140,220,0.5);
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.card-landscape .info-side {
+  flex:1;padding:16px 14px;
+  display:flex;flex-direction:column;justify-content:center;gap:6px;
+  border-left:1px solid rgba(0,80,180,0.2);
+}
+.jabatan-badge {
+  display:inline-block;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;
+  padding:3px 10px;border-radius:12px;
+  background:rgba(0,100,255,0.15);
+  border:1px solid rgba(0,120,255,0.3);
+  color:#4da6ff;
+  width:fit-content;
+}
+.card-nama {
+  font-size:16px;font-weight:800;color:#ddeeff;
+  line-height:1.1;
+}
+.card-umur {
+  font-size:12px;color:#2d6ea0;
+}
+.card-corner-br {
+  position:absolute;bottom:8px;right:8px;
+  width:14px;height:14px;
+  border-bottom:2px solid rgba(0,160,255,0.25);
+  border-right:2px solid rgba(0,160,255,0.25);
+  border-radius:0 0 3px 0;
+}
+
+/* Wakil - card landscape lebih kecil */
+.wakil-wrap {
+  margin:0 16px 20px;
+}
+.card-landscape.wakil {
+  height:110px;
+  border-color:rgba(0,100,200,0.25);
+}
+.card-landscape.wakil .photo-side {
+  width:88px;
+  background:radial-gradient(circle at 40% 40%, #1a0d2e, #080612);
+}
+.avatar-md {
+  width:50px;height:50px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;
+  border:2px solid rgba(255,255,255,0.12);
+}
+.card-landscape.wakil .jabatan-badge {
+  background:rgba(80,0,160,0.15);
+  border-color:rgba(100,60,220,0.3);
+  color:#9b7fff;
+}
+
+/* Sekretaris & Bendahara - 2 kolom */
+.duo-wrap {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:0 16px 20px;
+}
+.card-portrait {
+  background:#0b1828;
+  border:1px solid rgba(0,100,200,0.25);
+  border-radius:12px;
+  overflow:hidden;
+}
+.card-portrait .photo-box {
+  aspect-ratio:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
+  position:relative;
+  background:radial-gradient(circle at 40% 40%, #0d1f3a, #060e1a);
+}
+.card-portrait .photo-box::before {
+  content:'';position:absolute;top:6px;right:6px;
+  width:12px;height:12px;
+  border-top:2px solid rgba(0,160,255,0.4);
+  border-right:2px solid rgba(0,160,255,0.4);
+  border-radius:0 3px 0 0;
+}
+.avatar-sm {
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;
+  border:2px solid rgba(255,255,255,0.12);
+}
+.card-portrait .info-box {
+  padding:8px 10px;
+  background:#07111f;
+  border-top:1px solid rgba(0,80,180,0.2);
+}
+.portrait-badge {
+  font-size:8px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;
+  padding:2px 8px;border-radius:10px;
+  background:rgba(0,100,255,0.12);
+  border:1px solid rgba(0,120,255,0.25);
+  color:#4da6ff;
+  display:inline-block;
+  margin-bottom:4px;
+}
+.portrait-nama {
+  font-size:12px;font-weight:700;color:#b8d4f5;
+  line-height:1.2;
+}
+.portrait-umur {
+  font-size:10px;color:#1e4a70;margin-top:2px;
+}
+
+/* ── Semua Siswa ── */
+.all-title {
+  text-align:center;
+  font-size:10px;font-weight:600;letter-spacing:2.5px;
+  color:#1d4a70;text-transform:uppercase;
+  margin:8px 0 14px;
+  padding-top:20px;
+  border-top:1px solid rgba(0,80,180,0.15);
+}
+.gallery {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  padding:0 16px;
+}
+.mini-card {
+  background:#0b1828;
+  border:1px solid rgba(0,100,200,0.22);
+  border-radius:10px;
+  overflow:hidden;
+}
+.mini-photo {
+  aspect-ratio:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  background:radial-gradient(circle at 40% 40%, #0d1a2e, #060a14);
+  position:relative;
+}
+.mini-photo::before {
+  content:'';position:absolute;top:5px;right:5px;
+  width:10px;height:10px;
+  border-top:1.5px solid rgba(0,160,255,0.35);
+  border-right:1.5px solid rgba(0,160,255,0.35);
+  border-radius:0 2px 0 0;
+}
+.avatar-xs {
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;
+  border:1.5px solid rgba(255,255,255,0.1);
+}
+.mini-no {
+  font-size:7px;color:rgba(60,130,220,0.5);
+  letter-spacing:.5px;position:absolute;top:5px;left:6px;
+}
+.mini-info {
+  padding:5px 7px;background:#07111f;
+  border-top:1px solid rgba(0,80,180,0.15);
+}
+.mini-nama {
+  font-size:9px;font-weight:700;color:#90b8e0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.2;
+}
+.mini-umur {
+  font-size:8px;color:#1a3d60;margin-top:1px;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align:center;margin-top:36px;
+  padding:16px;
+  border-top:1px solid rgba(0,80,180,0.12);
+}
+.footer p {font-size:11px;color:rgba(45,110,160,0.5);letter-spacing:1px;}
+
+/* ── Modal foto ── */
+.modal-overlay {
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.85);
+  z-index:999;
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex;}
+.modal-box {
+  background:#0b1828;
+  border:1px solid rgba(0,120,255,0.4);
+  border-radius:16px;
+  padding:24px;
+  text-align:center;
+  max-width:280px;width:90%;
+}
+.modal-avatar {
+  width:100px;height:100px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;font-weight:800;color:#fff;
+  border:3px solid rgba(0,160,255,0.4);
+  margin:0 auto 14px;
+}
+.modal-nama{font-size:18px;font-weight:800;color:#ddeeff;margin-bottom:4px;}
+.modal-jabatan{font-size:11px;color:#4da6ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.modal-umur{font-size:13px;color:#2d6ea0;margin-bottom:16px;}
+.modal-close {
+  display:inline-block;padding:8px 24px;
+  background:rgba(0,80,200,0.2);
+  border:1px solid rgba(0,120,255,0.3);
+  border-radius:20px;color:#4da6ff;
+  font-size:13px;cursor:pointer;
+}
+.modal-close:active{background:rgba(0,80,200,0.4);}
+</style>
+</head>
+<body>
+
+<!-- Status Bar -->
+<div class="statusbar">
+  <div class="sb-left">
+    <div class="sb-logo" onclick="openModal('random')" title="Klik untuk lihat foto">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#4da6ff" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <span class="sb-user" id="sb-user">Pengguna</span>
+  </div>
+  <div class="sb-right">
+    <div>
+      <div class="sb-time" id="sb-time">00:00:00</div>
+      <div class="sb-tz" id="sb-tz">WIB</div>
+    </div>
+    <div class="sb-battery">
+      <div class="bat-icon">
+        <div class="bat-body"><div class="bat-fill" id="bat-fill" style="width:70%"></div></div>
+        <div class="bat-tip"></div>
+      </div>
+      <span class="bat-pct" id="bat-pct">70%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="page">
+  <div class="header">
+    <div class="welcome">Hai, Welcome to</div>
+    <div class="kelas-title">KELAS <span>VII-B</span></div>
+    <div class="divider"></div>
+  </div>
+
+  <!-- Ketua -->
+  <div class="section-label">Ketua Kelas</div>
+  <div class="ketua-wrap">
+    <div class="card-landscape" onclick="openModal(0)">
+      <div class="photo-side">
+        <div class="avatar-lg" style="background:#1a4fa0">RA</div>
+        <div class="no-foto-sm">tap untuk lihat</div>
+      </div>
+      <div class="info-side">
+        <div class="jabatan-badge">⭐ Ketua Kelas</div>
+        <div class="card-nama">Raka Aditya</div>
+        <div class="card-umur">13 tahun</div>
+      </div>
+      <div class="card-corner-br"></div>
+    </div>
+  </div>
+
+  <!-- Wakil -->
+  <div class="section-label">Wakil Ketua</div>
+  <div class="wakil-wrap">
+    <div class="card-landscape wakil" onclick="openModal(1)">
+      <div class="photo-side">
+        <div class="avatar-md" style="background:#5a1a8b">NF</div>
+        <div class="no-foto-sm">tap untuk lihat</div>
+      </div>
+      <div class="info-side">
+        <div class="jabatan-badge" style="background:rgba(80,0,160,0.15);border-color:rgba(100,60,220,0.3);color:#9b7fff;">🔹 Wakil Ketua</div>
+        <div class="card-nama">Nadia Fitri</div>
+        <div class="card-umur">12 tahun</div>
+      </div>
+      <div class="card-corner-br"></div>
+    </div>
+  </div>
+
+  <!-- Sekretaris & Bendahara -->
+  <div class="section-label">Sekretaris & Bendahara</div>
+  <div class="duo-wrap">
+    <div class="card-portrait" onclick="openModal(2)">
+      <div class="photo-box">
+        <div class="avatar-sm" style="background:#0e6b4a">SR</div>
+        <div class="no-foto-sm" style="font-size:7px;color:rgba(80,140,220,0.4)">tap lihat</div>
+      </div>
+      <div class="info-box">
+        <div class="portrait-badge" style="color:#2dcfa0;border-color:rgba(0,180,120,0.3);background:rgba(0,120,80,0.15);">📝 Sekretaris</div>
+        <div class="portrait-nama">Sari Rahayu</div>
+        <div class="portrait-umur">12 tahun</div>
+      </div>
+    </div>
+    <div class="card-portrait" onclick="openModal(3)">
+      <div class="photo-box">
+        <div class="avatar-sm" style="background:#8b3a1a">BP</div>
+        <div class="no-foto-sm" style="font-size:7px;color:rgba(80,140,220,0.4)">tap lihat</div>
+      </div>
+      <div class="info-box">
+        <div class="portrait-badge" style="color:#ffb347;border-color:rgba(220,140,0,0.3);background:rgba(160,90,0,0.15);">💰 Bendahara</div>
+        <div class="portrait-nama">Budi Prasetyo</div>
+        <div class="portrait-umur">13 tahun</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Semua Siswa -->
+  <div class="all-title">Semua Siswa Kelas VII-B</div>
+  <div class="gallery" id="gallery"></div>
+
+  <div class="footer">
+    <p>KELAS VII-B &nbsp;·&nbsp; SMP NEGERI &nbsp;·&nbsp; 2026/2027</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-avatar" id="m-avatar">RA</div>
+    <div class="modal-nama" id="m-nama">Nama</div>
+    <div class="modal-jabatan" id="m-jabatan">Jabatan</div>
+    <div class="modal-umur" id="m-umur">Umur</div>
+    <div class="modal-close" onclick="closeModal()">Tutup</div>
+  </div>
+</div>
+
+<script>
+// Data siswa
+const pengurus = [
+  {nama:"Raka Aditya", inisial:"RA", jabatan:"Ketua Kelas", umur:"13 tahun", warna:"#1a4fa0"},
+  {nama:"Nadia Fitri", inisial:"NF", jabatan:"Wakil Ketua", umur:"12 tahun", warna:"#5a1a8b"},
+  {nama:"Sari Rahayu", inisial:"SR", jabatan:"Sekretaris", umur:"12 tahun", warna:"#0e6b4a"},
+  {nama:"Budi Prasetyo", inisial:"BP", jabatan:"Bendahara", umur:"13 tahun", warna:"#8b3a1a"},
+];
+
+const siswa = [
+  {nama:"Aldi Saputra", umur:12, warna:"#1a4fa0"},
+  {nama:"Bunga Lestari", umur:13, warna:"#8b1a6b"},
+  {nama:"Cahyo Nugroho", umur:12, warna:"#0e6b4a"},
+  {nama:"Desi Kartika", umur:13, warna:"#7a2d00"},
+  {nama:"Eko Prabowo", umur:12, warna:"#2d1a8b"},
+  {nama:"Fitri Anggraini", umur:13, warna:"#1a6b6b"},
+  {nama:"Galih Santoso", umur:12, warna:"#5a1a8b"},
+  {nama:"Hana Maharani", umur:12, warna:"#8b3a1a"},
+  {nama:"Ilham Hidayat", umur:13, warna:"#1a7a3a"},
+  {nama:"Jihan Ramadhani", umur:12, warna:"#8b1a3a"},
+  {nama:"Kevin Maulana", umur:13, warna:"#1a4a7a"},
+  {nama:"Layla Nuraini", umur:12, warna:"#6b1a6b"},
+  {nama:"Mira Safitri", umur:13, warna:"#0e5a7a"},
+  {nama:"Naufal Rizki", umur:12, warna:"#7a1a4a"},
+  {nama:"Oscar Dinata", umur:13, warna:"#1a5a2a"},
+  {nama:"Putri Handayani", umur:12, warna:"#5a2a7a"},
+  {nama:"Qori Ramadhan", umur:13, warna:"#7a4a0e"},
+  {nama:"Rini Wulandari", umur:12, warna:"#1a3a7a"},
+  {nama:"Surya Pangestu", umur:13, warna:"#4a7a1a"},
+  {nama:"Tria Oktavia", umur:12, warna:"#7a1a1a"},
+  {nama:"Umar Hakim", umur:13, warna:"#1a6a4a"},
+  {nama:"Vina Aprilia", umur:12, warna:"#6a1a4a"},
+  {nama:"Wahyu Setiawan", umur:13, warna:"#2a4a7a"},
+  {nama:"Xena Nabilah", umur:12, warna:"#7a2a6a"},
+  {nama:"Yoga Pratama", umur:13, warna:"#1a5a7a"},
+  {nama:"Zara Safira", umur:12, warna:"#7a1a5a"},
+  {nama:"Arif Hidayat", umur:13, warna:"#3a6a1a"},
+  {nama:"Bella Rahayu", umur:12, warna:"#6a3a1a"},
+  {nama:"Chandra Wijaya", umur:13, warna:"#1a3a5a"},
+  {nama:"Diana Kartika", umur:12, warna:"#5a1a3a"},
+];
+
+const bgList = [
+  "radial-gradient(circle at 30% 30%, #0d1f3a, #060e1a)",
+  "radial-gradient(circle at 70% 30%, #1a0d2e, #080612)",
+  "radial-gradient(circle at 50% 70%, #0a1a0f, #060d08)",
+  "radial-gradient(circle at 20% 60%, #1a0a1a, #090609)",
+];
+
+// Build gallery
+const gallery = document.getElementById('gallery');
+siswa.forEach((s,i) => {
+  const inisial = s.nama.split(' ').map(w=>w[0]).slice(0,2).join('');
+  const bg = bgList[i % bgList.length];
+  const div = document.createElement('div');
+  div.className = 'mini-card';
+  div.onclick = () => openSiswa(s, inisial);
+  div.innerHTML = `
+    <div class="mini-photo" style="background:${bg}">
+      <div class="mini-no">#${String(i+1).padStart(2,'0')}</div>
+      <div class="avatar-xs" style="background:${s.warna}">${inisial}</div>
+    </div>
+    <div class="mini-info">
+      <div class="mini-nama">${s.nama}</div>
+      <div class="mini-umur">${s.umur} tahun</div>
+    </div>`;
+  gallery.appendChild(div);
+});
+
+// Modal
+function openModal(idx) {
+  let data;
+  if(idx === 'random') {
+    data = pengurus[Math.floor(Math.random() * pengurus.length)];
+  } else {
+    data = pengurus[idx];
+  }
+  document.getElementById('m-avatar').textContent = data.inisial;
+  document.getElementById('m-avatar').style.background = data.warna;
+  document.getElementById('m-nama').textContent = data.nama;
+  document.getElementById('m-jabatan').textContent = data.jabatan;
+  document.getElementById('m-umur').textContent = data.umur;
+  document.getElementById('modal').classList.add('show');
+}
+
+function openSiswa(s, inisial) {
+  document.getElementById('m-avatar').textContent = inisial;
+  document.getElementById('m-avatar').style.background = s.warna;
+  document.getElementById('m-nama').textContent = s.nama;
+  document.getElementById('m-jabatan').textContent = 'Siswa Kelas VII-B';
+  document.getElementById('m-umur').textContent = s.umur + ' tahun';
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// Clock & timezone
+function updateClock() {
+  const now = new Date();
+  const off = now.getTimezoneOffset();
+  let tz = 'WIB', h = now.getHours();
+  if(off <= -480) { tz='WITA'; }
+  if(off <= -540) { tz='WIT'; }
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('sb-time').textContent =
+    `${pad(h)}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  document.getElementById('sb-tz').textContent = tz;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Battery API
+if(navigator.getBattery) {
+  navigator.getBattery().then(b => {
+    function upd() {
+      const pct = Math.round(b.level * 100);
+      document.getElementById('bat-pct').textContent = pct + '%';
+      document.getElementById('bat-fill').style.width = pct + '%';
+    }
+    upd();
+    b.addEventListener('levelchange', upd);
+  });
+}
+
+// Username dari device
+document.getElementById('sb-user').textContent =
+  (navigator.userAgent.match(/Android/) ? 'Android' :
+   navigator.userAgent.match(/iPhone/) ? 'iPhone' : 'Pengguna');
+</script>
+</body>
+</html>
