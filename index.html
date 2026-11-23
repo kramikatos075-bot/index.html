@@ -2,1113 +2,843 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>X Spot Lagu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HISNU — MULTHI GAMES</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0a14;--card:#16162a;--card2:#1c1c35;
-  --accent:#1db954;--accent2:#1ed760;--blue:#4da6ff;
-  --text:#fff;--text2:#b3b3b3;--text3:#535353;--wa:#25D366;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
+:root {
+  --bg:#0d0d1a;--paper:#13132a;--card:#1a1a35;
+  --accent:#7c3aed;--accent2:#06b6d4;--accent3:#f59e0b;--accent4:#22c55e;
+  --text:#e2e8f0;--muted:#64748b;
+  --grid-line:rgba(124,58,237,0.12);
+  --glow:0 0 20px rgba(124,58,237,0.4);
+  --glow2:0 0 20px rgba(6,182,212,0.4);
+  --glow3:0 0 20px rgba(34,197,94,0.4);
 }
-html,body{height:100%;}
-body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);overflow-x:hidden;min-height:100%;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(29,185,84,.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(77,166,255,.08) 0%,transparent 50%);pointer-events:none;z-index:0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-/* STATUS BAR */
-.statusbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;background:rgba(10,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);}
-.sb-brand{display:flex;align-items:center;gap:8px;}
-.sb-brand-logo{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-brand-logo svg{width:16px;height:16px;}
-.sb-brand-name{font-size:13px;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.sb-right{display:flex;align-items:center;gap:10px;}
-.sb-time{font-size:12px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;}
-.sb-tz{font-size:9px;color:#1d4a70;letter-spacing:1px;}
-.sb-battery{display:flex;align-items:center;gap:4px;}
-.bat-body{width:22px;height:11px;border:1.5px solid var(--blue);border-radius:3px;padding:1.5px;display:flex;align-items:center;position:relative;}
-.bat-fill{height:100%;background:var(--blue);border-radius:1.5px;transition:width .4s,background .3s;min-width:0;}
-.bat-tip{width:3px;height:5px;background:var(--blue);border-radius:0 1px 1px 0;margin-left:1px;transition:background .3s;}
-.bat-pct{font-size:10px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;transition:color .3s;}
-.bat-charge{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:8px;line-height:1;color:#fff;text-shadow:0 0 2px #000;}
-.sb-battery.charging .bat-charge{display:flex;}
-.sb-battery.charging .bat-fill{background:#1ed760 !important;}
-.sb-battery.charging .bat-body{border-color:#1ed760;}
-.sb-battery.charging .bat-tip{background:#1ed760;}
-.sb-battery.charging .bat-pct{color:#1ed760;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),linear-gradient(rgba(124,58,237,0.04) 2px,transparent 2px),linear-gradient(90deg,rgba(124,58,237,0.04) 2px,transparent 2px);background-size:20px 20px,20px 20px,100px 100px,100px 100px;}
+.bg-boxes{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-box{position:absolute;border:1px solid rgba(124,58,237,0.08);border-radius:4px;animation:floatBox linear infinite;}
+@keyframes floatBox{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100px) rotate(45deg);opacity:0}}
 
-/* PAGES */
-.page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-bottom:140px;}
-.view{display:none;animation:fadeIn .2s ease;}
-.view.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 20px 60px;}
 
-/* HOME */
-.wa-bar{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;}
-.wa-box{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;padding:12px 16px;border-radius:12px;
-  background:linear-gradient(135deg,rgba(37,211,102,.15),rgba(37,211,102,.08));
-  border:1px solid rgba(37,211,102,.35);
-  color:#fff;font-size:14px;font-weight:600;text-decoration:none;
-  cursor:pointer;transition:background .15s,transform .1s;
-  -webkit-tap-highlight-color:transparent;
-}
-.wa-box:active{transform:scale(.98);background:rgba(37,211,102,.22);}
-.wa-box-icon{width:28px;height:28px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.wa-box-icon svg{width:16px;height:16px;}
-.wa-box-text{flex:1;text-align:center;letter-spacing:.2px;}
+header{text-align:center;margin-bottom:48px;}
+.header-line{width:60px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:0 auto 16px;}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,8vw,4.5rem);font-weight:900;letter-spacing:.15em;background:linear-gradient(135deg,#fff 20%,var(--accent2) 60%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;filter:drop-shadow(0 0 30px rgba(124,58,237,0.5));}
+.subtitle{font-family:'Orbitron',monospace;font-size:clamp(.7rem,2.5vw,1rem);letter-spacing:.5em;color:var(--accent2);margin-top:10px;}
+.header-deco{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px;}
+.header-deco span{display:block;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);width:80px;}
+.header-deco i{color:var(--accent3);font-size:.65rem;letter-spacing:3px;font-style:normal;}
 
-.album-cover{width:calc(100% - 32px);margin:0 16px 14px;aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;cursor:pointer;}
-.album-cover-art{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .3s;}
-.album-cover.spinning .album-cover-art{animation:spinSlow 8s linear infinite;}
-@keyframes spinSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.play-hint{position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(29,185,84,.5);transition:transform .15s;}
-.play-hint:active{transform:scale(.9);}
-.play-hint svg{width:20px;height:20px;margin-left:3px;}
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+@media(max-width:540px){.game-grid{grid-template-columns:1fr;}}
 
-/* SONG LIST */
-.songs-list{padding:0 16px;}
-.songs-list-title{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:12px;}
-.song-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s;position:relative;}
-.song-item:active,.song-item:hover{background:rgba(255,255,255,.06);}
-.song-item.playing{background:rgba(29,185,84,.1);}
-.song-item.loading-row{opacity:.6;pointer-events:none;}
-.song-thumb{width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;overflow:hidden;}
-.song-thumb .eq-anim{display:none;position:absolute;bottom:6px;gap:2px;align-items:flex-end;}
-.song-item.playing .song-thumb .eq-anim{display:flex;}
-.eq-bar{width:3px;border-radius:2px;background:var(--accent);animation:eq 1s ease-in-out infinite alternate;}
-.eq-bar:nth-child(1){height:8px;animation-delay:0s;}
-.eq-bar:nth-child(2){height:14px;animation-delay:.2s;}
-.eq-bar:nth-child(3){height:6px;animation-delay:.4s;}
-/* Saat pause / stop: bar hijau diam, tidak bergerak */
-.song-item.playing.paused .eq-bar{animation:none;height:8px;}
-@keyframes eq{from{height:4px}to{height:16px}}
-.song-meta{flex:1;min-width:0;}
-.song-title{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.song-artist{font-size:12px;color:var(--text2);margin-top:2px;}
-.song-dur{font-size:11px;color:var(--text3);flex-shrink:0;}
-.song-item.playing .song-title{color:var(--accent);}
+.game-card{background:var(--card);border:1px solid rgba(124,58,237,.2);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;}
+.game-card:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:var(--glow),0 20px 60px rgba(0,0,0,.5);}
+.card-thumb{height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 
-/* THUMBNAIL dari API */
-.song-thumb-img{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;}
+.thumb-ttt{background:linear-gradient(135deg,#1a0a3a,#0a1a3a);}
+.ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:20px;width:150px;height:150px;}
+.ttt-cell{background:rgba(255,255,255,.05);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;animation:cellPulse 2s ease-in-out infinite;}
+.ttt-cell.x{color:var(--accent)}.ttt-cell.o{color:var(--accent2)}
+@keyframes cellPulse{0%,100%{opacity:.6}50%{opacity:1}}
 
-/* SEARCH */
-.search-top{padding:20px 16px 10px;}
-.search-title{font-size:22px;font-weight:800;margin-bottom:16px;}
-.search-box{display:flex;align-items:center;gap:10px;background:#2a2a3a;border-radius:10px;padding:0 14px;}
-.search-box svg{width:18px;height:18px;flex-shrink:0;color:var(--text3);}
-.search-input{flex:1;border:none;background:transparent;color:var(--text);font-size:15px;padding:12px 0;outline:none;}
-.search-input::placeholder{color:var(--text3);}
-.search-go{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--accent);cursor:pointer;border:none;transition:transform .1s;flex-shrink:0;}
-.search-go:active{transform:scale(.9);}
-.search-go svg{width:16px;height:16px;}
-.search-results{padding:0 16px 20px;}
-.sr-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin:16px 0 10px;}
+.thumb-car{background:linear-gradient(180deg,#0a1a0a,#0a2a0a);position:relative;}
+.road-preview{display:flex;height:100%;width:100%;align-items:center;justify-content:center;}
+.road-lane{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.road-lane.asphalt{background:rgba(50,50,50,.5);width:50px;}
+.road-lane.grass{background:rgba(20,80,20,.4);width:40px;}
+.road-dash{width:4px;height:14px;background:#f59e0b;border-radius:2px;opacity:.7;animation:dashMove .6s linear infinite;}
+@keyframes dashMove{0%{transform:translateY(-10px);opacity:0}50%{opacity:.7}100%{transform:translateY(10px);opacity:0}}
+.car-mini{font-size:1.5rem;animation:carBob 1s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(6,182,212,.8));}
+@keyframes carBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-/* LOADING SPINNER */
-.spinner{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 0;}
-.spin-ring{width:36px;height:36px;border:3px solid rgba(29,185,84,.2);border-top-color:var(--accent);border-radius:50%;animation:spinRing .8s linear infinite;}
-@keyframes spinRing{to{transform:rotate(360deg)}}
-.spin-txt{font-size:13px;color:var(--text2);}
+/* Snake thumb */
+.thumb-snake{background:linear-gradient(135deg,#0a1a0a,#001a00);}
+.snake-preview{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:18px;width:150px;height:150px;}
+.snake-cell{border-radius:3px;background:rgba(255,255,255,.04);}
+.snake-cell.head{background:#22c55e;border-radius:4px;box-shadow:0 0 6px #22c55e;}
+.snake-cell.body{background:#16a34a;border-radius:3px;}
+.snake-cell.food{background:#f59e0b;border-radius:50%;animation:foodPulse 1s ease-in-out infinite;}
+@keyframes foodPulse{0%,100%{opacity:.7}50%{opacity:1;box-shadow:0 0 8px #f59e0b;}}
 
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:rgba(10,10,20,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));z-index:150;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;}
-.nav-btn svg{width:22px;height:22px;transition:color .15s;}
-.nav-label{font-size:10px;font-weight:600;letter-spacing:.5px;transition:color .15s;}
-.nav-btn.active svg,.nav-btn.active .nav-label{color:var(--accent);}
-.nav-btn:not(.active) svg,.nav-btn:not(.active) .nav-label{color:var(--text3);}
+/* Memory thumb */
+.thumb-mem{background:linear-gradient(135deg,#1a0a1a,#0a0a2a);}
+.mem-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:20px;width:160px;height:150px;}
+.mem-card-mini{border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.9rem;animation:memFlip 3s ease-in-out infinite;}
+.mem-card-mini.face{background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);}
+.mem-card-mini.back{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+@keyframes memFlip{0%,40%,100%{transform:rotateY(0)}50%,90%{transform:rotateY(180deg)}}
 
-/* NOW PLAYING BAR mini */
-.np-bar{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:460px;background:#1c1c35;border:1px solid rgba(29,185,84,.25);border-radius:14px;padding:10px 14px;display:none;align-items:center;gap:10px;z-index:140;box-shadow:0 -4px 30px rgba(0,0,0,.5);animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);}
-.np-bar.show{display:flex;}
-@keyframes slideUp{from{transform:translateX(-50%) translateY(80px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
-.np-cassette{width:38px;height:38px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
-.np-cassette-emoji{font-size:20px;}
-.np-bar.show.playing:not(.paused) .np-cassette-emoji{animation:spin 4s linear infinite;}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.np-cassette-img{width:38px;height:38px;border-radius:8px;object-fit:cover;}
-.np-info{flex:1;min-width:0;}
-.np-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent);}
-.np-artist{font-size:11px;color:var(--text2);}
-.np-controls{display:flex;align-items:center;gap:8px;}
-.np-btn{width:32px;height:32px;border-radius:50%;background:transparent;border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent;}
-.np-btn:active{background:rgba(255,255,255,.1);}
-.np-btn.play-pause{background:var(--accent);width:36px;height:36px;}
-.np-btn.play-pause:active{background:var(--accent2);}
-.np-btn svg{width:16px;height:16px;}
-.np-btn.play-pause svg{width:18px;height:18px;}
+.card-info{padding:16px 20px 20px;border-top:1px solid rgba(255,255,255,.05);}
+.card-info h3{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:4px;}
+.card-info p{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.4;}
+.play-btn{background:linear-gradient(135deg,var(--accent),#9333ea);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:'Rajdhani',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:opacity .2s,transform .15s;width:100%;}
+.play-btn:hover{opacity:.85;transform:scale(1.02);}
+.play-btn.green{background:linear-gradient(135deg,#16a34a,#15803d);}
+.play-btn.cyan{background:linear-gradient(135deg,#0891b2,#0e7490);}
 
-/* POPUP from top */
-.np-popup{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);width:100%;max-width:480px;background:linear-gradient(180deg,#1a2a1a 0%,#1c1c35 100%);border-bottom:1px solid rgba(29,185,84,.3);border-radius:0 0 24px 24px;padding:calc(10px + env(safe-area-inset-top,0px)) 20px 20px;z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 40px rgba(0,0,0,.7);}
-.np-popup.open{transform:translateX(-50%) translateY(0);}
-.np-popup-drag{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 16px;cursor:pointer;}
-.np-popup-inner{display:flex;align-items:center;gap:14px;}
-.np-popup-cassette{width:52px;height:52px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;}
-.np-popup-cassette .spin-icon{font-size:28px;}
-.np-popup.show:not(.paused) .spin-icon{animation:spin 4s linear infinite;}
-.np-popup-cassette img{width:52px;height:52px;object-fit:cover;border-radius:12px;}
-.np-popup-info{flex:1;min-width:0;}
-.np-popup-title{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent);}
-.np-popup-artist{font-size:12px;color:var(--text2);margin-top:2px;}
-.np-popup-controls{display:flex;align-items:center;gap:10px;margin-top:12px;}
-.pp-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent;}
-.pp-btn:active{background:rgba(255,255,255,.18);}
-.pp-btn.main{background:var(--accent);width:46px;height:46px;}
-.pp-btn.main:active{background:var(--accent2);}
-.pp-btn svg{width:18px;height:18px;}
-.pp-btn.main svg{width:22px;height:22px;}
-.pp-stop{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);}
-.pp-stop svg{color:#ff5050;}
-.prog-wrap{margin-top:12px;}
-.prog-bar{width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.12);position:relative;overflow:hidden;}
-.prog-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .5s linear;}
-.prog-times{display:flex;justify-content:space-between;margin-top:6px;}
-.prog-t{font-size:10px;color:var(--text3);}
+/* ══ OVERLAY ══ */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(5,5,15,.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.active{opacity:1;pointer-events:all;}
+.mode-picker{background:var(--paper);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:36px 32px;width:min(380px,90vw);transform:translateY(-30px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 40px 80px rgba(0,0,0,.6),var(--glow);text-align:center;}
+.overlay.active .mode-picker{transform:translateY(0);}
+.mode-title{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:.08em;}
+.mode-sub{font-size:.8rem;color:var(--muted);margin-bottom:28px;}
+.mode-options{display:flex;flex-direction:column;gap:12px;}
+.mode-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:16px 20px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.05em;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background .2s,border-color .2s,transform .15s;}
+.mode-btn:hover{background:rgba(124,58,237,.25);border-color:var(--accent);transform:scale(1.02);}
+.mode-btn .mode-icon{font-size:1.6rem;}
+.mode-btn .mode-desc{text-align:left;}
+.mode-btn .mode-desc span{display:block;font-size:.72rem;color:var(--muted);font-weight:400;margin-top:2px;}
+.close-btn{margin-top:20px;background:none;border:none;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;transition:color .2s;}
+.close-btn:hover{color:#fff;}
 
-/* AUDIO ELEMENT hidden */
-audio{display:none;}
+/* ══ GAME SCREEN ══ */
+.game-screen{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;transform:translateY(-100%);transition:transform .5s cubic-bezier(.77,0,.18,1);overflow-y:auto;}
+.game-screen.show{transform:translateY(0);}
+.game-screen-header{width:100%;padding:16px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(13,13,26,.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;}
+.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:6px 14px;font-family:'Rajdhani',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:background .2s;}
+.back-btn:hover{background:rgba(255,255,255,.15);}
+.game-screen-title{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--accent2);letter-spacing:.08em;}
 
-/* ── SC-STYLE WAVEFORM SCRUBBER ── */
-.sc-scrubber{
-  margin-top:14px;
-  user-select:none;
-  -webkit-user-select:none;
-}
-.sc-waveform-wrap{
-  position:relative;
-  height:52px;
-  border-radius:8px;
-  overflow:hidden;
-  cursor:pointer;
-  background:rgba(0,0,0,.3);
-  -webkit-tap-highlight-color:transparent;
-}
-/* waveform bars (SVG generated by JS) */
-.sc-waveform-svg{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-}
-/* buffer fill */
-.sc-buffer-fill{
-  position:absolute;top:0;left:0;height:100%;
-  background:rgba(255,255,255,.04);
-  pointer-events:none;
-  transition:width .3s;
-  width:0%;
-}
-/* played fill overlay */
-.sc-played-fill{
-  position:absolute;top:0;left:0;height:100%;
-  background:rgba(29,185,84,.18);
-  pointer-events:none;
-  transition:width .4s linear;
-  width:0%;
-}
-/* playhead needle */
-.sc-needle{
-  position:absolute;top:0;width:2px;height:100%;
-  background:var(--accent);
-  pointer-events:none;
-  transition:left .4s linear;
-  left:0%;
-  box-shadow:0 0 6px rgba(29,185,84,.7);
-}
-.sc-needle::after{
-  content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);
-  width:8px;height:8px;border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 8px rgba(29,185,84,.9);
-}
-/* time row */
-.sc-time-row{
-  display:flex;justify-content:space-between;
-  margin-top:5px;
-}
-.sc-time-t{font-size:10px;color:var(--text3);}
+/* ══ TIC TAC TOE ══ */
+#ttt-game{display:flex;flex-direction:column;align-items:center;padding:24px 20px;gap:16px;width:100%;}
+.ttt-status{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:var(--accent2);min-height:1.5em;text-align:center;letter-spacing:.05em;}
+.player-info{display:flex;gap:14px;align-items:center;width:100%;max-width:400px;justify-content:center;}
+.player-tag{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:6px 12px;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;color:var(--accent);flex:1;text-align:center;}
+.player-tag.active-player{background:rgba(124,58,237,.3);border-color:var(--accent);box-shadow:var(--glow);color:#fff;}
+.player-tag.p2{color:var(--accent2);border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.1);}
+.player-tag.p2.active-player{background:rgba(6,182,212,.3);border-color:var(--accent2);box-shadow:var(--glow2);color:#fff;}
+.score-badge{font-size:1.2rem;font-weight:900;display:block;margin-top:2px;}
+.vs-text{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--muted);font-weight:700;}
+.ttt-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(300px,85vw);height:min(300px,85vw);}
+.ttt-board-cell{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:clamp(2rem,8vw,3rem);font-weight:900;cursor:pointer;transition:background .2s,transform .15s,border-color .2s;}
+.ttt-board-cell:hover:not(.taken){background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);}
+.ttt-board-cell.taken{cursor:not-allowed;}
+.ttt-board-cell.X{color:var(--accent);text-shadow:var(--glow);}
+.ttt-board-cell.O{color:var(--accent2);text-shadow:var(--glow2);}
+.ttt-board-cell.win-cell{background:rgba(124,58,237,.2);border-color:var(--accent);animation:winPulse .6s ease-in-out infinite alternate;}
+.ttt-board-cell.win-cell.O{background:rgba(6,182,212,.2);border-color:var(--accent2);}
+@keyframes winPulse{from{box-shadow:none}to{box-shadow:0 0 20px rgba(124,58,237,.5)}}
+.ttt-actions{display:flex;gap:10px;}
+.action-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 20px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s;letter-spacing:.05em;}
+.action-btn:hover{background:rgba(255,255,255,.12);}
+.action-btn.primary{background:rgba(124,58,237,.2);border-color:var(--accent);color:#fff;}
+.action-btn.primary:hover{background:rgba(124,58,237,.35);}
 
-/* Volume slider row */
-.sc-vol-row{
-  display:flex;align-items:center;gap:8px;
-  margin-top:10px;
-}
-.sc-vol-icon{color:var(--text3);flex-shrink:0;}
-.sc-vol-icon svg{width:14px;height:14px;}
-.sc-vol-track{
-  flex:1;height:3px;border-radius:2px;
-  background:rgba(255,255,255,.1);
-  position:relative;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-.sc-vol-fill{
-  height:100%;border-radius:2px;
-  background:var(--accent);
-  width:80%;
-  pointer-events:none;
-  transition:width .1s;
-}
-.sc-vol-pct{font-size:10px;color:var(--text3);flex-shrink:0;min-width:28px;text-align:right;}
+/* ══ CAR GAME ══ */
+#car-game{display:flex;flex-direction:column;align-items:center;padding:16px 20px;gap:14px;width:100%;}
+.car-current-score{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--muted);letter-spacing:.05em;text-align:center;}
+.car-current-score span{color:var(--accent3);font-size:1.3rem;font-weight:900;display:block;margin-top:2px;}
+.car-hud{display:flex;gap:20px;align-items:center;}
+.hud-item{font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-align:center;}
+.hud-item span{color:var(--accent3);font-size:1rem;font-weight:700;display:block;}
+#car-canvas{border:2px solid rgba(124,58,237,.3);border-radius:12px;background:#0a1a0a;display:block;box-shadow:var(--glow);max-width:100%;}
+.car-controls{display:flex;gap:12px;align-items:center;}
+.ctrl-btn{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:12px 28px;color:#fff;font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;user-select:none;-webkit-tap-highlight-color:transparent;}
+.ctrl-btn:active{transform:scale(.95);background:rgba(124,58,237,.35);}
+.ctrl-hint{font-size:.7rem;color:var(--muted);text-align:center;}
 
-/* GRADIENTS */
-.g0{background:linear-gradient(135deg,#1a0533,#2d1b6e,#0a3d7a);}
-.g1{background:linear-gradient(135deg,#0d3320,#1a6632,#0a4a4a);}
-.g2{background:linear-gradient(135deg,#4a0d1a,#8b1a3a,#3a0a2a);}
-.g3{background:linear-gradient(135deg,#2a1a00,#6b4400,#4a2200);}
-.g4{background:linear-gradient(135deg,#001a4a,#003380,#001a3a);}
-.g5{background:linear-gradient(135deg,#2a001a,#5a0d40,#1a0030);}
-.g6{background:linear-gradient(135deg,#001a1a,#005a4a,#002a2a);}
-.g7{background:linear-gradient(135deg,#1a1a00,#4a4a00,#2a2a00);}
+/* ══ SNAKE GAME ══ */
+#snake-game{display:flex;flex-direction:column;align-items:center;padding:16px 20px;gap:14px;width:100%;}
+.snake-hud{display:flex;gap:24px;align-items:center;}
+.snake-hud .hud-item span{color:var(--accent4);}
+#snake-canvas{border:2px solid rgba(34,197,94,.3);border-radius:12px;background:#050f05;display:block;box-shadow:var(--glow3);max-width:100%;}
+.snake-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:160px;}
+.snake-controls .ctrl-btn{padding:10px;font-size:1rem;}
+.snake-controls .ctrl-btn.empty{opacity:0;pointer-events:none;}
 
-/* ERROR BOX */
-.err-box{background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.3);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13px;color:#ff8080;}
+/* ══ MEMORY GAME ══ */
+#memory-game{display:flex;flex-direction:column;align-items:center;padding:20px;gap:16px;width:100%;}
+.mem-hud{display:flex;gap:24px;align-items:center;}
+.mem-hud .hud-item span{color:var(--accent2);}
+.mem-board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(340px,90vw);}
+.mem-card{aspect-ratio:1;border-radius:10px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .4s;font-size:1.6rem;}
+.mem-card.flipped,.mem-card.matched{transform:rotateY(180deg);}
+.mem-card-face,.mem-card-back{position:absolute;inset:0;border-radius:10px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;}
+.mem-card-back{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);}
+.mem-card-back::after{content:'?';font-family:'Orbitron',monospace;font-size:.9rem;color:rgba(124,58,237,.5);}
+.mem-card-face{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);transform:rotateY(180deg);}
+.mem-card.matched .mem-card-face{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);box-shadow:var(--glow3);}
+.mem-status{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--accent2);text-align:center;min-height:1.4em;}
 </style>
 </head>
 <body>
+<div class="bg-grid"></div>
+<div class="bg-boxes" id="bgBoxes"></div>
 
-<!-- Hidden Audio Player -->
-<audio id="audio-player" preload="none"></audio>
+<div class="wrapper">
+  <header>
+    <div class="header-line"></div>
+    <div class="logo">HISNU</div>
+    <div class="subtitle">M U L T H I &nbsp;&nbsp; G A M E S</div>
+    <div class="header-deco"><span></span><i>◆ ◆ ◆</i><span></span></div>
+  </header>
 
-<!-- STATUS BAR -->
-<div class="statusbar">
-  <div class="sb-brand">
-    <div class="sb-brand-logo">
-      <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.33-.64.43-.97.23-2.65-1.62-5.98-1.99-9.9-1.09-.38.09-.76-.15-.85-.53s.15-.76.53-.85c4.3-.98 7.98-.56 10.96 1.27.33.2.43.64.23.97zm1.24-2.76c-.25.4-.78.52-1.18.28-3.03-1.86-7.65-2.4-11.23-1.31-.46.14-.95-.12-1.09-.58-.14-.46.12-.95.58-1.09 4.09-1.24 9.18-.64 12.65 1.52.4.25.52.78.27 1.18zm.11-2.87c-3.63-2.16-9.62-2.36-13.08-1.3-.55.17-1.14-.15-1.31-.7s.15-1.14.7-1.31c3.98-1.21 10.6-.97 14.78 1.5.5.3.67.95.37 1.46-.29.5-.95.67-1.46.37z"/></svg>
-    </div>
-    <span class="sb-brand-name">X Spot Lagu</span>
-  </div>
-  <div class="sb-right">
-    <div>
-      <div class="sb-time" id="sb-time">00:00</div>
-      <div class="sb-tz" id="sb-tz">WIB</div>
-    </div>
-    <div class="sb-battery" id="sb-battery">
-      <div class="bat-body" id="bat-body">
-        <div class="bat-fill" id="bat-fill" style="width:0%"></div>
-        <span class="bat-charge" id="bat-charge">⚡</span>
-      </div>
-      <div class="bat-tip" id="bat-tip"></div>
-      <span class="bat-pct" id="bat-pct">—</span>
-    </div>
-  </div>
-</div>
-
-<div class="page">
-
-  <!-- HOME VIEW -->
-  <div class="view active" id="view-home">
-    <div class="wa-bar">
-      <a class="wa-box" href="https://wa.me/6285236799873?text=errorbangh" target="_blank" rel="noopener">
-        <div class="wa-box-icon">
-          <svg viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+  <div class="game-grid">
+    <!-- TIC TAC TOE -->
+    <div class="game-card" onclick="openTTTMode()">
+      <div class="card-thumb thumb-ttt">
+        <div class="ttt-grid">
+          <div class="ttt-cell x" style="animation-delay:0s">X</div><div class="ttt-cell o" style="animation-delay:.2s">O</div><div class="ttt-cell x" style="animation-delay:.4s">X</div>
+          <div class="ttt-cell" style="animation-delay:.6s"></div><div class="ttt-cell x" style="animation-delay:.8s">X</div><div class="ttt-cell" style="animation-delay:1s"></div>
+          <div class="ttt-cell o" style="animation-delay:1.2s">O</div><div class="ttt-cell" style="animation-delay:1.4s"></div><div class="ttt-cell o" style="animation-delay:1.6s">O</div>
         </div>
-        <span class="wa-box-text">error? Click kontak own</span>
-      </a>
-    </div>
-
-    <div class="album-cover" id="main-cover" onclick="togglePlayCurrent()">
-      <div class="album-cover-art g0" id="cover-art"></div>
-      <div class="play-hint" id="play-hint">
-        <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
+      <div class="card-info">
+        <h3>TIC TAC TOE</h3>
+        <p>Strategi 3×3 klasik — kalahkan lawan sebelum dia mengalahkan kamu.</p>
+        <button class="play-btn">Pilih Mode ▶</button>
       </div>
     </div>
 
-    <div style="padding:0 16px 16px;">
-      <div id="current-title" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;">— Pilih Lagu —</div>
-      <div id="current-artist" style="font-size:13px;color:var(--text2);">Ketuk lagu di bawah atau cari lewat 🔍</div>
-    </div>
-
-    <div class="songs-list">
-      <div class="songs-list-title">Lagu Trending</div>
-      <div id="song-list"></div>
-    </div>
-  </div>
-
-  <!-- SEARCH VIEW -->
-  <div class="view" id="view-search">
-    <div class="search-top">
-      <div class="search-title">Cari Lagu</div>
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" id="search-input" placeholder="Ketik judul lagu…" autocomplete="off" inputmode="search">
-        <button class="search-go" id="search-go" onclick="doSearch()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+    <!-- CAR DODGE -->
+    <div class="game-card" onclick="startCarGame()">
+      <div class="card-thumb thumb-car">
+        <div class="road-preview">
+          <div class="road-lane grass"><div style="color:#228b22;font-size:1.1rem">🌿</div><div style="color:#228b22;font-size:.9rem">🌲</div><div style="color:#228b22;font-size:1.1rem">🌿</div></div>
+          <div class="road-lane asphalt"><div class="road-dash"></div><div class="road-dash" style="animation-delay:.2s"></div><div class="car-mini">🚙</div><div class="road-dash" style="animation-delay:.4s"></div></div>
+          <div class="road-lane asphalt" style="background:rgba(40,40,40,.4)"><div style="font-size:1.1rem;margin-bottom:4px">🚗</div><div class="road-dash" style="animation-delay:.3s"></div><div class="road-dash" style="animation-delay:.6s"></div></div>
+          <div class="road-lane asphalt" style="background:rgba(55,55,55,.3)"><div class="road-dash" style="animation-delay:.5s"></div><div style="font-size:1rem">🚕</div><div class="road-dash" style="animation-delay:.8s"></div></div>
+          <div class="road-lane grass"><div style="color:#228b22;font-size:.9rem">🌲</div><div style="color:#228b22;font-size:1.1rem">🌿</div><div style="color:#228b22;font-size:.9rem">🌲</div></div>
+        </div>
+      </div>
+      <div class="card-info">
+        <h3>CAR DODGE</h3>
+        <p>Gas pol, hindari mobil berhenti — seberapa jauh kamu bisa bertahan?</p>
+        <button class="play-btn">Main Sekarang ▶</button>
       </div>
     </div>
-    <div class="search-results" id="search-results">
-      <div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">Ketik judul lagu dan tekan →</div>
-    </div>
-  </div>
 
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-btn active" id="nav-home" onclick="switchView('home')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    <span class="nav-label">Beranda</span>
-  </div>
-  <div class="nav-btn" id="nav-search" onclick="switchView('search')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <span class="nav-label">Cari</span>
-  </div>
-</div>
-
-<!-- NP BAR mini -->
-<div class="np-bar" id="np-bar">
-  <div class="np-cassette" id="np-cassette">
-    <span class="np-cassette-emoji">📀</span>
-  </div>
-  <div class="np-info">
-    <div class="np-title" id="np-bar-title">Judul Lagu</div>
-    <div class="np-artist" id="np-bar-artist">Artis</div>
-  </div>
-  <div class="np-controls">
-    <button class="np-btn" onclick="prevSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
-    <button class="np-btn play-pause" id="np-pp-btn" onclick="togglePlay()"><svg viewBox="0 0 24 24" fill="white" id="np-pp-icon"><polygon points="5,3 19,12 5,21"/></svg></button>
-    <button class="np-btn" onclick="nextSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 2.14-5.5 2.14V9.86zM16 6h2v12h-2z"/></svg></button>
-  </div>
-</div>
-
-<!-- NP POPUP (slide from top) -->
-<div class="np-popup" id="np-popup">
-  <div class="np-popup-drag" onclick="closePopup()"></div>
-  <div class="np-popup-inner">
-    <div class="np-popup-cassette" id="pp-cassette"><span class="spin-icon">📀</span></div>
-    <div class="np-popup-info">
-      <div class="np-popup-title" id="pp-title">Judul Lagu</div>
-      <div class="np-popup-artist" id="pp-artist">Artis</div>
-    </div>
-  </div>
-  <div class="np-popup-controls">
-    <button class="pp-btn pp-stop" onclick="stopSong()"><svg viewBox="0 0 24 24" fill="#ff5050"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
-    <button class="pp-btn" onclick="prevSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
-    <button class="pp-btn main" id="pp-main-btn" onclick="togglePlay()"><svg viewBox="0 0 24 24" fill="white" id="pp-main-icon"><polygon points="5,3 19,12 5,21"/></svg></button>
-    <button class="pp-btn" onclick="nextSong()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 2.14-5.5 2.14V9.86zM16 6h2v12h-2z"/></svg></button>
-  </div>
-  <!-- SC-style waveform scrubber -->
-  <div class="sc-scrubber">
-    <div class="sc-waveform-wrap" id="sc-waveform" onclick="scSeek(event)" ontouchstart="scTouchSeek(event)">
-      <svg class="sc-waveform-svg" id="sc-wave-svg" viewBox="0 0 300 52" preserveAspectRatio="none"></svg>
-      <div class="sc-buffer-fill" id="sc-buffer"></div>
-      <div class="sc-played-fill" id="sc-played"></div>
-      <div class="sc-needle" id="sc-needle"></div>
-    </div>
-    <div class="sc-time-row">
-      <span class="sc-time-t" id="sc-cur">0:00</span>
-      <span class="sc-time-t" id="sc-dur">0:00</span>
-    </div>
-    <!-- Volume -->
-    <div class="sc-vol-row">
-      <span class="sc-vol-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></span>
-      <div class="sc-vol-track" id="sc-vol-track" onclick="scVolClick(event)" ontouchstart="scVolTouch(event)">
-        <div class="sc-vol-fill" id="sc-vol-fill"></div>
+    <!-- SNAKE -->
+    <div class="game-card" onclick="startSnakeGame()">
+      <div class="card-thumb thumb-snake">
+        <div class="snake-preview" id="snakeThumb"></div>
       </div>
-      <span class="sc-vol-pct" id="sc-vol-pct">80%</span>
+      <div class="card-info">
+        <h3>SNAKE</h3>
+        <p>Makan, tumbuh, jangan nabrak tembok atau ekor sendiri!</p>
+        <button class="play-btn green">Main Snake ▶</button>
+      </div>
+    </div>
+
+    <!-- MEMORY -->
+    <div class="game-card" onclick="startMemoryGame()">
+      <div class="card-thumb thumb-mem">
+        <div class="mem-preview">
+          <div class="mem-card-mini face" style="animation-delay:0s">🎮</div>
+          <div class="mem-card-mini back" style="animation-delay:.5s"></div>
+          <div class="mem-card-mini face" style="animation-delay:1s">🎯</div>
+          <div class="mem-card-mini back" style="animation-delay:1.5s"></div>
+          <div class="mem-card-mini back" style="animation-delay:.3s"></div>
+          <div class="mem-card-mini face" style="animation-delay:.8s">🏆</div>
+          <div class="mem-card-mini back" style="animation-delay:1.3s"></div>
+          <div class="mem-card-mini face" style="animation-delay:.6s">⭐</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <h3>MEMORY MATCH</h3>
+        <p>Temukan semua pasangan kartu dengan gerakan sesedikit mungkin.</p>
+        <button class="play-btn cyan">Main Memory ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TTT Mode Overlay -->
+<div class="overlay" id="tttOverlay">
+  <div class="mode-picker">
+    <div class="mode-title">TIC TAC TOE</div>
+    <div class="mode-sub">Pilih mode permainan</div>
+    <div class="mode-options">
+      <button class="mode-btn" onclick="startTTT('pvp')"><span class="mode-icon">👥</span><div class="mode-desc">1 VS 1 — PvP<span>Dua pemain di satu layar</span></div></button>
+      <button class="mode-btn" onclick="startTTT('ai')"><span class="mode-icon">🤖</span><div class="mode-desc">1 VS AI<span>Lawan kecerdasan buatan</span></div></button>
+    </div>
+    <button class="close-btn" onclick="closeTTTMode()">✕ Tutup</button>
+  </div>
+</div>
+
+<!-- Game Screen -->
+<div class="game-screen" id="gameScreen">
+  <div class="game-screen-header">
+    <button class="back-btn" onclick="closeGame()">← Kembali</button>
+    <div class="game-screen-title" id="gameScreenTitle">GAME</div>
+  </div>
+
+  <!-- TTT -->
+  <div id="ttt-game" style="display:none">
+    <div class="player-info">
+      <div class="player-tag active-player" id="p1tag">P1 — X<span class="score-badge" id="p1score">0</span></div>
+      <div class="vs-text">VS</div>
+      <div class="player-tag p2" id="p2tag">P2 — O<span class="score-badge" id="p2score">0</span></div>
+    </div>
+    <div class="ttt-status" id="tttStatus">Giliran Player X</div>
+    <div class="ttt-board" id="tttBoard"></div>
+    <div class="ttt-actions">
+      <button class="action-btn primary" onclick="resetTTT()">🔄 Main Lagi</button>
+    </div>
+  </div>
+
+  <!-- Car Game -->
+  <div id="car-game" style="display:none">
+    <div class="car-current-score">SKOR SAAT INI<span id="carCurrentDisplay">0</span></div>
+    <div class="car-hud">
+      <div class="hud-item">REKOR<span id="carBest">0</span></div>
+      <div class="hud-item">NYAWA<span id="carLives">❤️❤️❤️</span></div>
+    </div>
+    <canvas id="car-canvas" width="300" height="430"></canvas>
+    <div class="car-controls">
+      <button class="ctrl-btn" id="btnLeft" ontouchstart="carLeft(event)" ontouchend="carRelease()">◀</button>
+      <button class="ctrl-btn" id="btnRight" ontouchstart="carRight(event)" ontouchend="carRelease()">▶</button>
+    </div>
+    <div class="ctrl-hint">Keyboard: ← → | Tap tombol di atas</div>
+  </div>
+
+  <!-- Snake Game -->
+  <div id="snake-game" style="display:none">
+    <div class="snake-hud">
+      <div class="hud-item">SKOR<span id="snakeScore">0</span></div>
+      <div class="hud-item">REKOR<span id="snakeBest">0</span></div>
+      <div class="hud-item">LEVEL<span id="snakeLevel">1</span></div>
+    </div>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+    <div class="snake-controls">
+      <div class="ctrl-btn empty"></div>
+      <button class="ctrl-btn" onclick="snakeDir(0,-1)">▲</button>
+      <div class="ctrl-btn empty"></div>
+      <button class="ctrl-btn" onclick="snakeDir(-1,0)">◀</button>
+      <button class="ctrl-btn" onclick="snakeDir(0,1)">▼</button>
+      <button class="ctrl-btn" onclick="snakeDir(1,0)">▶</button>
+    </div>
+    <div class="ctrl-hint">Keyboard: Arrow Keys | Tap tombol di atas</div>
+  </div>
+
+  <!-- Memory Game -->
+  <div id="memory-game" style="display:none">
+    <div class="mem-hud">
+      <div class="hud-item">GERAKAN<span id="memMoves">0</span></div>
+      <div class="hud-item">PASANGAN<span id="memPairs">0/8</span></div>
+      <div class="hud-item">WAKTU<span id="memTime">0s</span></div>
+    </div>
+    <div class="mem-status" id="memStatus">Temukan semua pasangan!</div>
+    <div class="mem-board" id="memBoard"></div>
+    <div class="ttt-actions" style="margin-top:8px">
+      <button class="action-btn primary" onclick="initMemory()">🔄 Main Lagi</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// DATA LAGU TRENDING (fallback lokal, juga tampil di home)
-// ═══════════════════════════════════════════════════
-const localSongs = [
-  {title:"Espresso",artist:"Sabrina Carpenter",dur:175,emoji:"☕",grade:0},
-  {title:"Flowers",artist:"Miley Cyrus",dur:200,emoji:"🌸",grade:1},
-  {title:"As It Was",artist:"Harry Styles",dur:167,emoji:"🌙",grade:2},
-  {title:"Anti-Hero",artist:"Taylor Swift",dur:200,emoji:"🦋",grade:3},
-  {title:"Unholy",artist:"Sam Smith",dur:156,emoji:"🕯️",grade:4},
-  {title:"Calm Down",artist:"Rema & Selena Gomez",dur:239,emoji:"🌊",grade:5},
-  {title:"Blinding Lights",artist:"The Weeknd",dur:200,emoji:"🌃",grade:6},
-  {title:"Stay",artist:"The Kid LAROI",dur:141,emoji:"⚡",grade:7},
-  {title:"Levitating",artist:"Dua Lipa",dur:203,emoji:"🪐",grade:0},
-  {title:"Good 4 U",artist:"Olivia Rodrigo",dur:178,emoji:"💔",grade:1},
-  {title:"Dynamite",artist:"BTS",dur:199,emoji:"💥",grade:2},
-  {title:"Kiss Me More",artist:"Doja Cat",dur:208,emoji:"💋",grade:3},
-  {title:"Peaches",artist:"Justin Bieber",dur:198,emoji:"🍑",grade:4},
-  {title:"Montero",artist:"Lil Nas X",dur:137,emoji:"🎸",grade:5},
-  {title:"Watermelon Sugar",artist:"Harry Styles",dur:174,emoji:"🍉",grade:6},
-];
-
-// ═══════════════════════════════════════════════════
-// API CONFIG (dari bot play.js)
-// ═══════════════════════════════════════════════════
-const IKYY_KEY = 'kyzz';
-const API_TIMEOUT = 20000;
-const CORS = 'https://corsproxy.io/?url='; // proxy CORS buat browser
-
-function toSec(d) {
-  if (typeof d === 'number') return d;
-  const p = String(d || '').split(':').map(Number);
-  return p.some(isNaN) ? 0 : p.reduce((a, n) => a * 60 + n, 0);
-}
-const isUrl = x => typeof x === 'string' && /^https?:\/\//.test(x);
-
-function parseLoose(d) {
-  const r = d?.result || d?.data || d;
-  const first = Array.isArray(r) ? r[0] : r;
-  if (!first || typeof first !== 'object') return null;
-  const link = [first.download_url, first.audio?.url, first.audio, first.mp3,
-    first.url_audio, first.download?.url, first.download, first.dl, first.link].find(isUrl);
-  if (!link) return null;
-  return {
-    title: first.title || first.judul || first.searched_title,
-    thumbnail: first.thumbnail || first.thumb || first.image,
-    duration: Number(first.seconds) || toSec(first.duration),
-    source: first.source || first.url || first.searched_url || first.link_video,
-    audio: { url: link }
-  };
-}
-
-const PLAY_APIS = [
-  {
-    name: 'xrina',
-    queries: v => [v.title + ' ' + (v.artist||''), v.title],
-    url: q => `${CORS}https://apiii-xrina.my.id/download/play?q=${encodeURIComponent(q)}`,
-    parse: parseLoose
-  },
-  {
-    name: 'ikyyxd',
-    queries: v => [v.title + ' ' + (v.artist||''), v.title],
-    url: q => `${CORS}https://api.ikyyxd.my.id/search/ytplayv2?apikey=${IKYY_KEY}&q=${encodeURIComponent(q)}`,
-    parse: d => d?.status && d.result?.audio?.url ? d.result : parseLoose(d)
-  },
-  {
-    name: 'nexray',
-    queries: v => [v.title + ' ' + (v.artist||'')],
-    url: q => `${CORS}https://api.nexray.eu.cc/downloader/ytplay?q=${encodeURIComponent(q)}`,
-    parse: d => {
-      const r = d?.result;
-      if (!d?.status || !r?.download_url) return null;
-      return { title: r.title, thumbnail: r.thumbnail, duration: r.seconds || toSec(r.duration), source: r.url, audio: { url: r.download_url } };
-    }
-  },
-  {
-    name: 'azbry',
-    queries: v => [v.title + ' ' + (v.artist||'')],
-    url: q => `${CORS}https://api.azbry.com/api/download/ytplay?q=${encodeURIComponent(q)}`,
-    parse: parseLoose
-  }
-];
-
-async function tryApi(api, video) {
-  let lastErr = new Error('kosong');
-  for (const q of api.queries(video).filter(Boolean)) {
-    try {
-      const ctrl = new AbortController();
-      const tid = setTimeout(() => ctrl.abort(), API_TIMEOUT);
-      const res = await fetch(api.url(q), { signal: ctrl.signal, headers: { 'Accept': 'application/json' } });
-      clearTimeout(tid);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      const parsed = api.parse(data);
-      if (parsed) return parsed;
-      lastErr = new Error('respons tidak dikenali');
-    } catch(e) { lastErr = e; }
-  }
-  throw lastErr;
-}
-
-async function getPlay(video) {
-  try { return await Promise.any(PLAY_APIS.map(api => tryApi(api, video))); }
-  catch { return null; }
-}
-
-// ═══════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════
-let currentSong = null;      // { title, artist, thumbnail, audioUrl, dur, grade, emoji }
-let searchResults = [];      // hasil terakhir search
-let isPlaying = false;
-let progInterval = null;
-let progSeconds = 0;
-const audio = document.getElementById('audio-player');
-let loadingRowEl = null;
-
-// ═══════════════════════════════════════════════════
-// FORMAT
-// ═══════════════════════════════════════════════════
-function fmt(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
-function fmtViews(n) {
-  n = Number(String(n||'').replace(/[^\d]/g,''));
-  if(!n) return '';
-  if(n>=1e6) return (n/1e6).toFixed(1)+' M views';
-  if(n>=1e3) return (n/1e3).toFixed(1)+' K views';
-  return n+' views';
-}
-
-// ═══════════════════════════════════════════════════
-// COVER ART
-// ═══════════════════════════════════════════════════
-function makeVinyl(song) {
-  const art = document.getElementById('cover-art');
-  const g = song ? (song.grade ?? 0) : 0;
-  if (song?.thumbnail) {
-    art.style.backgroundImage = `url('${song.thumbnail}')`;
-    art.style.backgroundSize = 'cover';
-    art.style.backgroundPosition = 'center';
-    art.className = 'album-cover-art';
-    art.innerHTML = '';
-  } else {
-    art.style.backgroundImage = '';
-    art.className = `album-cover-art g${g}`;
-    art.innerHTML = `
-      <div style="position:relative;width:80%;height:80%;display:flex;align-items:center;justify-content:center;">
-        <div style="position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(255,255,255,.08);"></div>
-        <div style="position:absolute;width:70%;height:70%;border-radius:50%;border:1.5px solid rgba(255,255,255,.06);"></div>
-        <div style="position:absolute;width:40%;height:40%;border-radius:50%;border:1.5px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);"></div>
-        <div style="position:absolute;width:12%;height:12%;border-radius:50%;background:rgba(255,255,255,.2);"></div>
-        <span style="font-size:clamp(48px,14vw,72px);z-index:1;">${song?.emoji||'🎵'}</span>
-      </div>`;
-  }
-}
-
-// ═══════════════════════════════════════════════════
-// BUILD LIST
-// ═══════════════════════════════════════════════════
-function buildLocalList() {
-  const el = document.getElementById('song-list');
-  el.innerHTML = '';
-  localSongs.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'song-item';
-    div.id = 'lsi-' + i;
-    div.onclick = () => fetchAndPlay({title:s.title, artist:s.artist, grade:s.grade, emoji:s.emoji}, div);
-    div.innerHTML = `
-      <div class="song-thumb g${s.grade}">
-        <span style="font-size:22px;z-index:1;">${s.emoji}</span>
-        <div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>
-      </div>
-      <div class="song-meta">
-        <div class="song-title">${s.title}</div>
-        <div class="song-artist">${s.artist}</div>
-      </div>
-      <span class="song-dur">${fmt(s.dur)}</span>`;
-    el.appendChild(div);
-  });
-}
-
-function buildSearchList(results) {
-  const el = document.getElementById('sr-list');
-  if(!el) return;
-  el.innerHTML = '';
-  results.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'song-item';
-    div.id = 'sri-' + i;
-    const thumb = s.thumbnail
-      ? `<img src="${s.thumbnail}" class="song-thumb-img" onerror="this.style.display='none'">`
-      : `<div class="song-thumb g${i%8}"><span style="font-size:22px;">🎵</span><div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>`;
-    div.innerHTML = `
-      ${thumb}
-      <div class="song-meta">
-        <div class="song-title">${s.title}</div>
-        <div class="song-artist">${s.artist||'YouTube'}${s.views?' · '+fmtViews(s.views):''}</div>
-      </div>
-      <span class="song-dur">${s.durText||''}</span>`;
-    div.onclick = () => fetchAndPlay(s, div);
-    el.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════
-// FETCH & PLAY (inti: panggil API, lalu play audio)
-// ═══════════════════════════════════════════════════
-async function fetchAndPlay(video, rowEl) {
-  // set loading state di row
-  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
-  loadingRowEl = rowEl;
-  rowEl.classList.add('loading-row');
-
-  // tampilkan loading di cover
-  const art = document.getElementById('cover-art');
-  art.className = `album-cover-art g${video.grade??0}`;
-  art.style.backgroundImage = '';
-  art.innerHTML = `<div class="spinner"><div class="spin-ring"></div><div class="spin-txt">Mengambil audio…</div></div>`;
-
-  document.getElementById('current-title').textContent = video.title;
-  document.getElementById('current-artist').textContent = video.artist || 'Mencari…';
-
-  const res = await getPlay(video);
-  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
-
-  if(!res) {
-    art.innerHTML = `<div class="spinner"><div class="spin-txt" style="color:#ff8080">❌ Audio tidak ditemukan</div></div>`;
-    return;
-  }
-
-  // Siapkan data lagu
-  const song = {
-    title: res.title || video.title,
-    artist: video.artist || '',
-    thumbnail: res.thumbnail || video.thumbnail || null,
-    audioUrl: res.audio.url,
-    dur: res.duration || video.dur || 0,
-    grade: video.grade ?? 0,
-    emoji: video.emoji || '🎵'
-  };
-
-  currentSong = song;
-  startPlay(song);
-}
-
-// ═══════════════════════════════════════════════════
-// AUDIO PLAYER
-// ═══════════════════════════════════════════════════
-function startPlay(song) {
-  // set audio
-  audio.src = song.audioUrl;
-  audio.load();
-  audio.play().catch(() => {});
-  isPlaying = true;
-
-  // cover
-  makeVinyl(song);
-  document.getElementById('main-cover').classList.add('spinning');
-  document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
-
-  // info
-  document.getElementById('current-title').textContent = song.title;
-  document.getElementById('current-artist').textContent = song.artist;
-
-  // NP bar
-  audio.volume = scVol / 100;
-  const bar = document.getElementById('np-bar');
-  bar.classList.add('show','playing'); bar.classList.remove('paused');
-  document.getElementById('np-bar-title').textContent = song.title;
-  document.getElementById('np-bar-artist').textContent = song.artist;
-
-  // NP bar cassette (gambar jika ada thumb)
-  const cas = document.getElementById('np-cassette');
-  if(song.thumbnail) cas.innerHTML = `<img src="${song.thumbnail}" class="np-cassette-img" onerror="this.outerHTML='<span class=np-cassette-emoji>📀</span>'">`;
-  else cas.innerHTML = `<span class="np-cassette-emoji">📀</span>`;
-
-  // Popup
-  document.getElementById('pp-title').textContent = song.title;
-  document.getElementById('pp-artist').textContent = song.artist;
-  document.getElementById('prog-dur').textContent = song.dur ? fmt(song.dur) : '–';
-  const ppCas = document.getElementById('pp-cassette');
-  if(song.thumbnail) ppCas.innerHTML = `<img src="${song.thumbnail}" onerror="this.outerHTML='<span class=spin-icon>📀</span>'" style="width:52px;height:52px;object-fit:cover;border-radius:12px;">`;
-  else ppCas.innerHTML = `<span class="spin-icon">📀</span>`;
-  document.getElementById('np-popup').classList.add('show'); document.getElementById('np-popup').classList.remove('paused');
-  setPlayIcon(true);
-
-  showPopup();
-
-  // Progress lewat audio events
-  clearInterval(progInterval);
-  progSeconds = 0;
-  document.getElementById('prog-fill').style.width = '0%';
-  document.getElementById('prog-cur').textContent = '0:00';
-
-  // Generate fake waveform bars untuk lagu ini
-  generateWaveform();
-
-  audio.ontimeupdate = () => {
-    const cur = audio.currentTime;
-    const dur = audio.duration || song.dur || 1;
-    const pct = (cur / dur) * 100;
-    // SC-style waveform update
-    document.getElementById('sc-played').style.width = pct + '%';
-    document.getElementById('sc-needle').style.left = pct + '%';
-    document.getElementById('sc-cur').textContent = fmt(Math.floor(cur));
-    document.getElementById('sc-dur').textContent = fmt(Math.floor(audio.duration) || song.dur || 0);
-    // buffer
-    if (audio.buffered.length) {
-      const bufPct = (audio.buffered.end(audio.buffered.length-1) / dur) * 100;
-      document.getElementById('sc-buffer').style.width = bufPct + '%';
-    }
-    progSeconds = Math.floor(cur);
-  };
-  audio.onended = () => nextFromList();
-
-  // highlight list
-  document.querySelectorAll('.song-item').forEach(el => el.classList.remove('playing','paused'));
-  if(loadingRowEl) {
-    loadingRowEl.classList.add('playing');
-    loadingRowEl.classList.remove('paused');
-  }
-
-  // update semua np-cassette-emoji animation
-  refreshCassetteAnim();
-}
-
-function refreshCassetteAnim() {
-  const bar = document.getElementById('np-bar');
-  bar.classList.toggle('paused', !isPlaying);
-  if (currentSong) bar.classList.add('playing');
-  document.getElementById('np-popup').classList.toggle('paused', !isPlaying);
-}
-
-// ═══════════════════════════════════════════════════
-// KONTROL
-// ═══════════════════════════════════════════════════
-function togglePlay() {
-  if(!currentSong) return;
-  if(isPlaying) {
-    audio.pause(); isPlaying = false;
-    document.getElementById('main-cover').classList.remove('spinning');
-    document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`;
-    if(loadingRowEl) loadingRowEl.classList.add('paused');
-  } else {
-    audio.play().catch(()=>{}); isPlaying = true;
-    document.getElementById('main-cover').classList.add('spinning');
-    document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
-    if(loadingRowEl) loadingRowEl.classList.remove('paused');
-  }
-  setPlayIcon(isPlaying);
-  refreshCassetteAnim();
-}
-
-function togglePlayCurrent() {
-  if(!currentSong) {
-    // play random dari local list
-    const s = localSongs[Math.floor(Math.random()*localSongs.length)];
-    fetchAndPlay({title:s.title,artist:s.artist,grade:s.grade,emoji:s.emoji}, document.getElementById('lsi-0')||document.body);
-  } else { togglePlay(); }
-}
-
-function stopSong() {
-  audio.pause(); audio.src='';
-  isPlaying = false; currentSong = null; progSeconds = 0;
-  document.getElementById('main-cover').classList.remove('spinning');
-  document.getElementById('play-hint').innerHTML = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`;
-  document.getElementById('np-bar').classList.remove('show','playing','paused');
-  document.getElementById('current-title').textContent = '— Pilih Lagu —';
-  document.getElementById('current-artist').textContent = 'Ketuk lagu di bawah atau cari lewat 🔍';
-  document.querySelectorAll('.song-item').forEach(el=>el.classList.remove('playing','paused'));
-  makeVinyl(null);
-  setPlayIcon(false); closePopup();
-  document.getElementById('np-popup').classList.remove('show');
-  // reset SC waveform
-  ['sc-played','sc-buffer'].forEach(id=>document.getElementById(id).style.width='0%');
-  document.getElementById('sc-needle').style.left='0%';
-  document.getElementById('sc-cur').textContent='0:00';
-  document.getElementById('sc-dur').textContent='0:00';
-}
-
-function nextFromList() {
-  // coba next dari search results dulu, lalu local
-  if(searchResults.length > 0 && loadingRowEl) {
-    const id = loadingRowEl.id;
-    if(id.startsWith('sri-')) {
-      const idx = parseInt(id.replace('sri-',''));
-      const next = searchResults[idx+1];
-      if(next) { const el=document.getElementById('sri-'+(idx+1)); fetchAndPlay(next,el||document.body); return; }
-    }
-  }
-  const id = loadingRowEl?.id||'';
-  if(id.startsWith('lsi-')) {
-    const idx=parseInt(id.replace('lsi-',''));
-    const next=localSongs[(idx+1)%localSongs.length];
-    const el=document.getElementById('lsi-'+((idx+1)%localSongs.length));
-    fetchAndPlay({title:next.title,artist:next.artist,grade:next.grade,emoji:next.emoji},el||document.body);
-  }
-}
-
-function prevSong() {
-  if(audio.currentTime > 3) { audio.currentTime=0; return; }
-  const id = loadingRowEl?.id||'';
-  if(id.startsWith('sri-')) {
-    const idx=parseInt(id.replace('sri-',''));
-    const prev=searchResults[Math.max(0,idx-1)];
-    const el=document.getElementById('sri-'+Math.max(0,idx-1));
-    fetchAndPlay(prev,el||document.body);
-  } else if(id.startsWith('lsi-')) {
-    const idx=parseInt(id.replace('lsi-',''));
-    const pi=(idx-1+localSongs.length)%localSongs.length;
-    const prev=localSongs[pi];
-    const el=document.getElementById('lsi-'+pi);
-    fetchAndPlay({title:prev.title,artist:prev.artist,grade:prev.grade,emoji:prev.emoji},el||document.body);
-  }
-}
-
-function nextSong() {
-  if(audio.currentTime > 0) audio.currentTime = audio.duration-0.1;
-  else nextFromList();
-}
-
-function setPlayIcon(pl) {
-  const ic = pl
-    ? `<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>`
-    : `<polygon points="5,3 19,12 5,21"/>`;
-  document.getElementById('np-pp-icon').innerHTML = ic;
-  document.getElementById('pp-main-icon').innerHTML = ic;
-}
-
-// ═══════════════════════════════════════════════════
-// POPUP
-// ═══════════════════════════════════════════════════
-let popupTimer = null;
-function showPopup() {
-  document.getElementById('np-popup').classList.add('open');
-  clearTimeout(popupTimer);
-  popupTimer = setTimeout(closePopup, 6000);
-}
-function closePopup() {
-  document.getElementById('np-popup').classList.remove('open');
-}
-document.getElementById('np-bar').addEventListener('click', function(e) {
-  if(!e.target.closest('.np-btn') && currentSong) showPopup();
-});
-
-// ═══════════════════════════════════════════════════
-// SEARCH — pakai API getPlay langsung
-// ═══════════════════════════════════════════════════
-document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
-
-async function doSearch() {
-  const q = document.getElementById('search-input').value.trim();
-  const container = document.getElementById('search-results');
-  if(!q){ container.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">Ketik judul lagu dan tekan →</div>'; return; }
-
-  container.innerHTML = `<div class="spinner"><div class="spin-ring"></div><div class="spin-txt">Mencari "${q}"…</div></div>`;
-
-  // Langsung getPlay dengan query mentah, hasilnya 1 lagu
-  // Tapi kita mau tampilkan pilihan → pakai semua API paralel dan kumpulkan hasil unik
-  let results = [];
-  const seen = new Set();
-
-  // Jalankan semua API, kumpulkan semua yang berhasil
-  const promises = PLAY_APIS.map(api =>
-    (async () => {
-      for(const rawQ of api.queries({title:q, artist:''}).filter(Boolean)) {
-        try {
-          const ctrl = new AbortController();
-          const tid = setTimeout(()=>ctrl.abort(), API_TIMEOUT);
-          const res = await fetch(api.url(rawQ), {signal:ctrl.signal, headers:{Accept:'application/json'}});
-          clearTimeout(tid);
-          if(!res.ok) continue;
-          const data = await res.json();
-          const parsed = api.parse(data);
-          if(!parsed?.audio?.url) continue;
-          const key = parsed.title||rawQ;
-          if(seen.has(key)) continue;
-          seen.add(key);
-          results.push({
-            title: parsed.title || q,
-            artist: parsed.channel || '',
-            thumbnail: parsed.thumbnail || null,
-            dur: parsed.duration || 0,
-            durText: parsed.duration ? fmt(parsed.duration) : '',
-            audioUrl: parsed.audio.url,
-            grade: results.length % 8,
-            emoji: '🎵',
-            _ready: true,  // sudah ada audioUrl
-            _apiData: parsed
-          });
-          return; // 1 hasil per API sudah cukup
-        } catch {}
-      }
-    })()
-  );
-
-  await Promise.allSettled(promises);
-
-  if(!results.length) {
-    container.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--text3);font-size:14px;">❌ Tidak ada hasil untuk "<b style="color:#fff">${q}</b>"<br><span style="font-size:12px;">Coba judul lain atau periksa koneksi</span></div>`;
-    return;
-  }
-
-  searchResults = results;
-  container.innerHTML = `<div class="sr-label">Hasil Pencarian (${results.length})</div><div id="sr-list"></div>`;
-
-  // Render list; klik langsung play (audioUrl sudah ada)
-  const el = document.getElementById('sr-list');
-  results.forEach((s,i)=>{
-    const div=document.createElement('div');
-    div.className='song-item'; div.id='sri-'+i;
-    const thumb=s.thumbnail
-      ? `<img src="${s.thumbnail}" class="song-thumb-img" onerror="this.style.display='none'">`
-      : `<div class="song-thumb g${i%8}"><span style="font-size:22px;">🎵</span><div class="eq-anim"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>`;
-    div.innerHTML=`${thumb}<div class="song-meta"><div class="song-title">${s.title}</div><div class="song-artist">${s.artist||'YouTube'}</div></div><span class="song-dur">${s.durText||''}</span>`;
-    div.onclick=()=>playReady(s,div);
-    el.appendChild(div);
-  });
-}
-
-// Play lagu yang audioUrl-nya sudah ada (dari hasil search)
-function playReady(song, rowEl) {
-  if(loadingRowEl) loadingRowEl.classList.remove('loading-row');
-  loadingRowEl = rowEl;
-  currentSong = song;
-  startPlay(song);
-}
-
-// ═══════════════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════════════
-function switchView(name) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('nav-'+name).classList.add('active');
-  if(name==='search') setTimeout(()=>document.getElementById('search-input').focus(),200);
-}
-
-// ═══════════════════════════════════════════════════
-// CLOCK & BATTERY
-// ═══════════════════════════════════════════════════
-function updateClock(){
-  const now=new Date(),off=now.getTimezoneOffset();
-  let tz='WIB';
-  if(off<=-480) tz='WITA';
-  if(off<=-540) tz='WIT';
-  const p=n=>String(n).padStart(2,'0');
-  document.getElementById('sb-time').textContent=`${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
-  document.getElementById('sb-tz').textContent=tz;
-}
-setInterval(updateClock,1000); updateClock();
-
-(function initBattery(){
-  const fill = document.getElementById('bat-fill');
-  const pctEl = document.getElementById('bat-pct');
-  const body = document.getElementById('bat-body');
-  const tip = document.getElementById('bat-tip');
-  const wrap = document.getElementById('sb-battery');
-
-  function paint(level, charging){
-    const pct = Math.max(0, Math.min(100, Math.round((level || 0) * 100)));
-    fill.style.width = pct + '%';
-    pctEl.textContent = pct + '%';
-    const col = charging ? '#1ed760' : (pct <= 15 ? '#ff4444' : pct <= 30 ? '#ffaa00' : 'var(--blue)');
-    if (!charging) {
-      fill.style.background = col;
-      body.style.borderColor = col;
-      tip.style.background = col;
-      pctEl.style.color = col;
-    }
-    wrap.classList.toggle('charging', !!charging);
-  }
-
-  // Battery Status API (Chrome/Android & sebagian browser desktop)
-  if (navigator.getBattery) {
-    navigator.getBattery().then(b => {
-      const upd = () => paint(b.level, b.charging);
-      upd();
-      b.addEventListener('levelchange', upd);
-      b.addEventListener('chargingchange', upd);
-      // backup poll tiap 30 detik (kadang event tidak fire)
-      setInterval(upd, 30000);
-    }).catch(() => {
-      pctEl.textContent = '—';
-    });
-  } else {
-    // API tidak tersedia (Safari/iOS, Firefox, dll)
-    pctEl.textContent = '—';
+/* ══ BG BOXES ══ */
+(function(){
+  const c=document.getElementById('bgBoxes'),sizes=[30,50,70,90,120,150];
+  for(let i=0;i<20;i++){
+    const b=document.createElement('div');b.className='bg-box';
+    const s=sizes[Math.floor(Math.random()*sizes.length)];
+    b.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${8+Math.random()*15}s;animation-delay:${-Math.random()*15}s;opacity:${.03+Math.random()*.06};`;
+    c.appendChild(b);
   }
 })();
 
-// ═══════════════════════════════════════════════════
-// SC-STYLE WAVEFORM
-// ═══════════════════════════════════════════════════
-let waveSeeds = [];
+/* ══ SNAKE THUMB ══ */
+(function(){
+  const g=document.getElementById('snakeThumb');
+  const snake=[19,20,21,22];const food=5;
+  for(let i=0;i<64;i++){
+    const d=document.createElement('div');
+    if(i===snake[0])d.className='snake-cell head';
+    else if(snake.includes(i))d.className='snake-cell body';
+    else if(i===food)d.className='snake-cell food';
+    else d.className='snake-cell';
+    g.appendChild(d);
+  }
+})();
 
-function generateWaveform() {
-  const svg = document.getElementById('sc-wave-svg');
-  if (!svg) return;
-  const W = 300, H = 52, bars = 80, gap = 1;
-  const barW = (W - gap * (bars - 1)) / bars;
-  // generate random heights (seeded per song title for consistency)
-  const seed = currentSong ? currentSong.title.split('').reduce((a,c)=>a+c.charCodeAt(0),0) : 42;
-  waveSeeds = Array.from({length: bars}, (_, i) => {
-    // pseudo-random using seed
-    const r = Math.abs(Math.sin(seed * 9301 + i * 49297 + 233720)) % 1;
-    // shape: higher in middle, lower at edges
-    const env = Math.sin((i / bars) * Math.PI);
-    return 0.15 + env * 0.6 * r + 0.15 * r;
-  });
-  let paths = '';
-  waveSeeds.forEach((h, i) => {
-    const x = i * (barW + gap);
-    const barH = Math.max(3, h * (H * 0.9));
-    const y = (H - barH) / 2;
-    const r = Math.min(1.5, barW / 2);
-    // bottom half (mirror, darker)
-    paths += `<rect x="${x.toFixed(1)}" y="${(H/2).toFixed(1)}" width="${barW.toFixed(1)}" height="${(barH/2).toFixed(1)}" rx="${r}" fill="rgba(255,255,255,0.12)"/>`;
-    // top half
-    paths += `<rect x="${x.toFixed(1)}" y="${(H/2 - barH/2).toFixed(1)}" width="${barW.toFixed(1)}" height="${(barH/2).toFixed(1)}" rx="${r}" fill="rgba(255,255,255,0.22)"/>`;
-  });
-  // played overlay bars (green) — rendered on top via clipPath trick, done in CSS overlay
-  svg.innerHTML = `<defs>
-    <clipPath id="played-clip">
-      <rect id="played-clip-rect" x="0" y="0" width="0" height="${H}"/>
-    </clipPath>
-  </defs>
-  <g id="wave-base">${paths}</g>
-  <g id="wave-played" clip-path="url(#played-clip)">${paths.replace(/rgba\(255,255,255,0\.\d+\)/g, 'rgba(29,185,84,0.9)')}</g>`;
-
-  // hook sc-played to also update clipPath
-  const origUpdate = audio.ontimeupdate;
-  audio.ontimeupdate = (e) => {
-    origUpdate && origUpdate(e);
-    const pct = !isNaN(audio.duration) ? (audio.currentTime / audio.duration) * 100 : 0;
-    const clipRect = document.getElementById('played-clip-rect');
-    if (clipRect) clipRect.setAttribute('width', (pct * 3).toFixed(1)); // 300px wide
-  };
+/* ══ UTILS ══ */
+function showGame(id,title){
+  ['ttt-game','car-game','snake-game','memory-game'].forEach(x=>document.getElementById(x).style.display='none');
+  document.getElementById(id).style.display='flex';
+  document.getElementById('gameScreenTitle').textContent=title;
+  document.getElementById('gameScreen').classList.add('show');
+}
+function closeGame(){
+  document.getElementById('gameScreen').classList.remove('show');
+  carGameActive=false;cancelAnimationFrame(carAnim);
+  clearInterval(snakeInterval);clearInterval(memTimer);
 }
 
-// ── SEEK (klik waveform) ──
-function scSeek(e) {
-  if (!currentSong) return;
-  const rect = document.getElementById('sc-waveform').getBoundingClientRect();
-  const rel = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  if (!isNaN(audio.duration)) {
-    audio.currentTime = audio.duration * rel;
-    if (!isPlaying) { audio.play().catch(()=>{}); isPlaying = true; setPlayIcon(true); refreshCassetteAnim(); }
+/* ══════════════════════════════════════
+   TIC TAC TOE
+══════════════════════════════════════ */
+let tttBoard=[],tttCurrent='X',tttMode='pvp',tttOver=false;
+let tttScore={X:0,O:0};
+
+function openTTTMode(){document.getElementById('tttOverlay').classList.add('active');}
+function closeTTTMode(){document.getElementById('tttOverlay').classList.remove('active');}
+
+function startTTT(mode){
+  tttMode=mode;tttScore={X:0,O:0};
+  closeTTTMode();
+  document.getElementById('p2tag').innerHTML=`${mode==='ai'?'AI':'P2'} — O<span class="score-badge" id="p2score">0</span>`;
+  showGame('ttt-game','TIC TAC TOE');
+  resetTTT();
+}
+
+function resetTTT(){
+  tttBoard=Array(9).fill('');tttCurrent='X';tttOver=false;
+  document.getElementById('tttStatus').textContent='Giliran Player X';
+  document.getElementById('p1tag').classList.add('active-player');
+  document.getElementById('p2tag').classList.remove('active-player');
+  updateTTTScore();renderTTTBoard();
+}
+
+function updateTTTScore(){
+  document.getElementById('p1score').textContent=tttScore.X;
+  document.getElementById('p2score').textContent=tttScore.O;
+}
+
+function renderTTTBoard(winCells=[]){
+  const board=document.getElementById('tttBoard');board.innerHTML='';
+  tttBoard.forEach((val,i)=>{
+    const cell=document.createElement('div');
+    cell.className='ttt-board-cell'+(val?' taken '+val:'');
+    if(winCells.includes(i))cell.classList.add('win-cell');
+    cell.textContent=val;
+    if(!val&&!tttOver)cell.onclick=()=>tttClick(i);
+    board.appendChild(cell);
+  });
+}
+
+function tttClick(i){
+  if(tttBoard[i]||tttOver)return;
+  tttBoard[i]=tttCurrent;
+  const result=checkTTT();
+  if(result)return;
+  if(tttMode==='ai'&&tttCurrent==='O')setTimeout(aiMove,400);
+}
+
+function checkTTT(){
+  const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const [a,b,c] of wins){
+    if(tttBoard[a]&&tttBoard[a]===tttBoard[b]&&tttBoard[a]===tttBoard[c]){
+      tttOver=true;
+      const winner=tttBoard[a];
+      tttScore[winner]++;updateTTTScore();
+      const label=tttMode==='ai'&&winner==='O'?'🤖 AI':`Player ${winner}`;
+      document.getElementById('tttStatus').textContent=`🎉 ${label} Menang!`;
+      renderTTTBoard([a,b,c]);return true;
+    }
+  }
+  if(tttBoard.every(v=>v)){
+    tttOver=true;
+    document.getElementById('tttStatus').textContent='🤝 Seri!';
+    renderTTTBoard();return true;
+  }
+  tttCurrent=tttCurrent==='X'?'O':'X';
+  const isAi=tttMode==='ai'&&tttCurrent==='O';
+  document.getElementById('tttStatus').textContent=isAi?'🤖 AI berpikir...':`Giliran Player ${tttCurrent}`;
+  document.getElementById('p1tag').classList.toggle('active-player',tttCurrent==='X');
+  document.getElementById('p2tag').classList.toggle('active-player',tttCurrent==='O');
+  renderTTTBoard();return false;
+}
+
+function aiMove(){
+  if(tttOver)return;
+  const best=minimax(tttBoard,'O');
+  tttBoard[best.index]='O';checkTTT();
+}
+function minimax(board,player){
+  const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const avail=board.map((v,i)=>v?null:i).filter(v=>v!==null);
+  for(const [a,b,c] of wins){
+    if(board[a]==='X'&&board[b]==='X'&&board[c]==='X')return{score:-10};
+    if(board[a]==='O'&&board[b]==='O'&&board[c]==='O')return{score:10};
+  }
+  if(!avail.length)return{score:0};
+  const moves=[];
+  for(const idx of avail){
+    const nb=[...board];nb[idx]=player;
+    const r=minimax(nb,player==='O'?'X':'O');
+    moves.push({index:idx,score:r.score});
+  }
+  return moves.reduce((best,m)=>player==='O'?(m.score>best.score?m:best):(m.score<best.score?m:best),{score:player==='O'?-Infinity:Infinity});
+}
+
+/* ══════════════════════════════════════
+   CAR DODGE — fixed version
+   Obstacles are STATIONARY (parked cars)
+   Only player car moves forward
+══════════════════════════════════════ */
+let carAnim,carGameActive=false;
+let carScore=0,carBest=0,carLives=3;
+let carLane=1,carTargetX=0,carX=0;
+let obstacles=[];
+let frameCount=0,roadSpeed=2;
+const CAR_LANES=3,GRASS_W=48;
+
+function startCarGame(){showGame('car-game','CAR DODGE');initCarGame();}
+
+function drawCar(ctx,x,y,color,scale=1,isPlayer=false){
+  ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+  // body
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.roundRect(-16,-22,32,40,4);ctx.fill();
+  // roof
+  ctx.fillStyle=isPlayer?'#93c5fd':'#cbd5e1';
+  ctx.beginPath();ctx.roundRect(-11,-20,22,18,3);ctx.fill();
+  // windshield
+  ctx.fillStyle='rgba(147,197,253,0.6)';
+  ctx.beginPath();ctx.roundRect(-9,-19,18,14,2);ctx.fill();
+  // lights front (bottom = front since top of canvas = far)
+  ctx.fillStyle=isPlayer?'#fbbf24':'#f87171';
+  ctx.fillRect(-14,14,8,5);ctx.fillRect(6,14,8,5);
+  // lights rear (top = rear for obstacles, since they face same direction)
+  ctx.fillStyle=isPlayer?'#f87171':'#fbbf24';
+  ctx.fillRect(-14,-24,8,5);ctx.fillRect(6,-24,8,5);
+  // wheels
+  ctx.fillStyle='#1e293b';
+  [[-16,-14],[10,-14],[-16,10],[10,10]].forEach(([wx,wy])=>{
+    ctx.beginPath();ctx.roundRect(wx,wy,6,10,2);ctx.fill();
+  });
+  ctx.restore();
+}
+
+function initCarGame(){
+  const canvas=document.getElementById('car-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const laneW=(W-GRASS_W*2)/CAR_LANES;
+  function laneX(l){return GRASS_W+l*laneW+laneW/2;}
+
+  carScore=0;carLives=3;roadSpeed=2;frameCount=0;
+  carLane=1;carX=laneX(1);carTargetX=carX;
+  obstacles=[];carGameActive=true;
+
+  updateCarHUD();
+
+  let dashOffset=0;
+  // Grass trees positions
+  const grassItems=[];
+  for(let i=0;i<10;i++)grassItems.push({y:Math.random()*H,side:Math.random()>.5?1:-1,type:Math.random()>.5?'🌲':'🌿'});
+
+  cancelAnimationFrame(carAnim);
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Sky/bg
+    ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
+
+    // Grass
+    const grassGrad=ctx.createLinearGradient(0,0,GRASS_W,0);
+    grassGrad.addColorStop(0,'#1a3d1a');grassGrad.addColorStop(1,'#2d5a1e');
+    ctx.fillStyle=grassGrad;ctx.fillRect(0,0,GRASS_W,H);
+    const grassGrad2=ctx.createLinearGradient(W-GRASS_W,0,W,0);
+    grassGrad2.addColorStop(0,'#2d5a1e');grassGrad2.addColorStop(1,'#1a3d1a');
+    ctx.fillStyle=grassGrad2;ctx.fillRect(W-GRASS_W,0,GRASS_W,H);
+
+    // Grass texture
+    ctx.font='14px serif';ctx.textAlign='center';
+    for(const g of grassItems){
+      g.y+=roadSpeed*0.3;if(g.y>H+20)g.y=-20;
+      const gx=g.side===1?(W-GRASS_W/2):GRASS_W/2;
+      ctx.fillText(g.type,gx,g.y);
+    }
+
+    // Road
+    ctx.fillStyle='#2a2a2a';ctx.fillRect(GRASS_W,0,W-GRASS_W*2,H);
+    // Road texture
+    ctx.fillStyle='#242424';
+    for(let i=0;i<H;i+=40){ctx.fillRect(GRASS_W,(i+dashOffset%40)-40,W-GRASS_W*2,2);}
+
+    // Lane dividers
+    for(let l=1;l<CAR_LANES;l++){
+      const x=GRASS_W+l*laneW;
+      ctx.strokeStyle='rgba(245,158,11,0.6)';ctx.setLineDash([22,18]);
+      ctx.lineDashOffset=-dashOffset;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // Edge lines
+    ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.lineDashOffset=0;
+    ctx.beginPath();ctx.moveTo(GRASS_W,0);ctx.lineTo(GRASS_W,H);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W-GRASS_W,0);ctx.lineTo(W-GRASS_W,H);ctx.stroke();
+
+    // Obstacles (STATIONARY — they don't move, road moves under them)
+    for(const ob of obstacles){
+      ob.screenY+=roadSpeed; // scroll with road
+      drawCar(ctx,ob.x,ob.screenY,ob.color,0.9,false);
+    }
+
+    // Player car smooth movement
+    carX+=(carTargetX-carX)*0.15;
+    drawCar(ctx,carX,H-70,'#3b82f6',1,true);
+
+    // HUD on canvas (score)
+    if(carGameActive){
+      ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(GRASS_W+4,4,80,22);
+      ctx.fillStyle='#f59e0b';ctx.font='bold 13px Orbitron,monospace';ctx.textAlign='left';
+      ctx.fillText(`${carScore}`,GRASS_W+10,20);
+    }
+
+    if(!carGameActive){
+      ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#fff';ctx.font='bold 22px Orbitron,monospace';ctx.textAlign='center';
+      ctx.fillText('GAME OVER',W/2,H/2-30);
+      ctx.fillStyle='#f59e0b';ctx.font='bold 15px Orbitron,monospace';
+      ctx.fillText(`SKOR SAAT INI: ${carScore}`,W/2,H/2+2);
+      ctx.fillStyle='#94a3b8';ctx.font='13px Rajdhani,sans-serif';
+      ctx.fillText(`REKOR: ${carBest}`,W/2,H/2+24);
+      ctx.fillStyle='rgba(124,58,237,0.8)';ctx.fillRect(W/2-60,H/2+40,120,32);
+      ctx.fillStyle='#fff';ctx.font='bold 12px Orbitron,monospace';
+      ctx.fillText('MAIN LAGI',W/2,H/2+61);
+    }
+
+    dashOffset+=roadSpeed;
+    frameCount++;
+    if(carGameActive){
+      if(frameCount%2===0)carScore++;
+      roadSpeed=2+Math.floor(carScore/150)*0.4;
+      document.getElementById('carCurrentDisplay').textContent=carScore;
+    }
+
+    // Spawn new obstacle
+    const spawnRate=Math.max(55,110-Math.floor(carScore/120)*5);
+    if(frameCount%spawnRate===0&&carGameActive){
+      // Pick a lane that's not already blocked near top
+      const occupiedLanes=obstacles.filter(o=>o.screenY<120).map(o=>o.laneIdx);
+      const freeLanes=[0,1,2].filter(l=>!occupiedLanes.includes(l));
+      if(freeLanes.length>0){
+        const lane=freeLanes[Math.floor(Math.random()*freeLanes.length)];
+        const colors=['#ef4444','#f97316','#eab308','#8b5cf6','#ec4899','#14b8a6'];
+        obstacles.push({x:laneX(lane),screenY:-40,laneIdx:lane,color:colors[Math.floor(Math.random()*colors.length)]});
+      }
+    }
+
+    // Remove off-screen obstacles
+    obstacles=obstacles.filter(o=>o.screenY<H+60);
+
+    // Collision detection
+    if(carGameActive){
+      for(let i=obstacles.length-1;i>=0;i--){
+        const ob=obstacles[i];
+        const dx=Math.abs(ob.x-carX),dy=Math.abs(ob.screenY-(H-70));
+        if(dx<24&&dy<30){
+          obstacles.splice(i,1);
+          carLives--;updateCarHUD();
+          // Flash effect
+          ctx.fillStyle='rgba(239,68,68,0.3)';ctx.fillRect(0,0,W,H);
+          if(carLives<=0){
+            carGameActive=false;
+            if(carScore>carBest){carBest=carScore;document.getElementById('carBest').textContent=carBest;}
+            updateCarHUD();
+          }
+          break;
+        }
+      }
+    }
+
+    carAnim=requestAnimationFrame(draw);
+  }
+
+  function updateLane(dir){
+    if(!carGameActive)return;
+    carLane=Math.max(0,Math.min(CAR_LANES-1,carLane+dir));
+    carTargetX=laneX(carLane);
+  }
+  window._carLane=updateLane;
+  carTargetX=laneX(1);carX=laneX(1);
+  draw();
+}
+
+function updateCarHUD(){
+  document.getElementById('carCurrentDisplay').textContent=carScore;
+  document.getElementById('carBest').textContent=carBest;
+  document.getElementById('carLives').textContent='❤️'.repeat(Math.max(0,carLives));
+}
+function carLeft(e){if(e)e.preventDefault();if(window._carLane)window._carLane(-1);}
+function carRight(e){if(e)e.preventDefault();if(window._carLane)window._carLane(1);}
+function carRelease(){}
+
+document.getElementById('car-canvas').addEventListener('click',function(){
+  if(!carGameActive){cancelAnimationFrame(carAnim);initCarGame();}
+});
+
+/* ══════════════════════════════════════
+   SNAKE GAME
+══════════════════════════════════════ */
+let snakeInterval,snakeBest=0;
+const SGRID=20,SCELL=15; // 20x20 grid, 15px per cell = 300px canvas
+
+let snake=[],snakeDirX=1,snakeDirY=0,nextDX=1,nextDY=0;
+let food={},snakeScore=0,snakeRunning=false;
+
+function startSnakeGame(){showGame('snake-game','SNAKE');initSnake();}
+
+function initSnake(){
+  clearInterval(snakeInterval);
+  snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  snakeDirX=1;snakeDirY=0;nextDX=1;nextDY=0;
+  snakeScore=0;snakeRunning=true;
+  document.getElementById('snakeScore').textContent=0;
+  document.getElementById('snakeLevel').textContent=1;
+  spawnFood();
+  const level=()=>Math.floor(snakeScore/5)+1;
+  const speed=()=>Math.max(80,200-level()*15);
+  function tick(){
+    snakeDirX=nextDX;snakeDirY=nextDY;
+    const head={x:snake[0].x+snakeDirX,y:snake[0].y+snakeDirY};
+    // Wall collision
+    if(head.x<0||head.x>=SGRID||head.y<0||head.y>=SGRID){snakeOver();return;}
+    // Self collision
+    if(snake.some(s=>s.x===head.x&&s.y===head.y)){snakeOver();return;}
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      snakeScore++;
+      document.getElementById('snakeScore').textContent=snakeScore;
+      document.getElementById('snakeLevel').textContent=level();
+      spawnFood();
+      clearInterval(snakeInterval);
+      snakeInterval=setInterval(tick,speed());
+    } else {snake.pop();}
+    drawSnake();
+  }
+  snakeInterval=setInterval(tick,200);
+  drawSnake();
+}
+
+function spawnFood(){
+  do{food={x:Math.floor(Math.random()*SGRID),y:Math.floor(Math.random()*SGRID)};}
+  while(snake.some(s=>s.x===food.x&&s.y===food.y));
+}
+
+function drawSnake(){
+  const canvas=document.getElementById('snake-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  // BG grid
+  for(let x=0;x<SGRID;x++)for(let y=0;y<SGRID;y++){
+    ctx.fillStyle=(x+y)%2===0?'#071207':'#061006';
+    ctx.fillRect(x*SCELL,y*SCELL,SCELL,SCELL);
+  }
+  // Food
+  const fx=food.x*SCELL+SCELL/2,fy=food.y*SCELL+SCELL/2,fr=SCELL/2-1;
+  ctx.beginPath();ctx.arc(fx,fy,fr,0,Math.PI*2);
+  const fg=ctx.createRadialGradient(fx,fy,0,fx,fy,fr);
+  fg.addColorStop(0,'#fde68a');fg.addColorStop(1,'#f59e0b');
+  ctx.fillStyle=fg;ctx.fill();
+  ctx.fillStyle='#78350f';ctx.font='7px serif';ctx.textAlign='center';ctx.fillText('🍎',fx,fy+3);
+
+  // Snake body
+  snake.forEach((seg,i)=>{
+    const sx=seg.x*SCELL,sy=seg.y*SCELL;
+    const t=i/snake.length;
+    const r=Math.floor(22*(1-t)+10*t),g=Math.floor(197*(1-t)+120*t);
+    ctx.fillStyle=`rgb(${r},${g},80)`;
+    ctx.beginPath();ctx.roundRect(sx+1,sy+1,SCELL-2,SCELL-2,3);ctx.fill();
+    if(i===0){
+      // Eyes
+      ctx.fillStyle='#000';
+      ctx.beginPath();ctx.arc(sx+SCELL*0.3,sy+SCELL*0.3,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(sx+SCELL*0.7,sy+SCELL*0.3,2,0,Math.PI*2);ctx.fill();
+    }
+  });
+
+  if(!snakeRunning){
+    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#22c55e';ctx.font='bold 20px Orbitron,monospace';ctx.textAlign='center';
+    ctx.fillText('GAME OVER',W/2,H/2-20);
+    ctx.fillStyle='#f59e0b';ctx.font='bold 13px Orbitron,monospace';
+    ctx.fillText(`Skor: ${snakeScore}`,W/2,H/2+5);
+    ctx.fillStyle='#64748b';ctx.font='12px Rajdhani,sans-serif';
+    ctx.fillText('Tap canvas untuk main lagi',W/2,H/2+28);
   }
 }
-function scTouchSeek(e) {
-  if (!currentSong) return;
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = document.getElementById('sc-waveform').getBoundingClientRect();
-  const rel = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
-  if (!isNaN(audio.duration)) {
-    audio.currentTime = audio.duration * rel;
+
+function snakeOver(){
+  snakeRunning=false;clearInterval(snakeInterval);
+  if(snakeScore>snakeBest){snakeBest=snakeScore;document.getElementById('snakeBest').textContent=snakeBest;}
+  drawSnake();
+}
+
+function snakeDir(dx,dy){
+  if(!snakeRunning)return;
+  if(dx===1&&snakeDirX===-1)return;if(dx===-1&&snakeDirX===1)return;
+  if(dy===1&&snakeDirY===-1)return;if(dy===-1&&snakeDirY===1)return;
+  nextDX=dx;nextDY=dy;
+}
+
+document.getElementById('snake-canvas').addEventListener('click',function(){
+  if(!snakeRunning)initSnake();
+});
+
+/* ══════════════════════════════════════
+   MEMORY MATCH GAME
+══════════════════════════════════════ */
+let memTimer,memSeconds=0,memMoves=0,memPairsFound=0,memFlipped=[],memLocked=false;
+const MEM_EMOJIS=['🎮','🕹️','🏆','⭐','🎯','🔥','💎','🚀'];
+
+function startMemoryGame(){showGame('memory-game','MEMORY MATCH');initMemory();}
+
+function initMemory(){
+  clearInterval(memTimer);
+  memSeconds=0;memMoves=0;memPairsFound=0;memFlipped=[];memLocked=false;
+  document.getElementById('memMoves').textContent=0;
+  document.getElementById('memPairs').textContent='0/8';
+  document.getElementById('memTime').textContent='0s';
+  document.getElementById('memStatus').textContent='Temukan semua pasangan!';
+  memTimer=setInterval(()=>{
+    memSeconds++;
+    document.getElementById('memTime').textContent=memSeconds+'s';
+  },1000);
+  const cards=[...MEM_EMOJIS,...MEM_EMOJIS].sort(()=>Math.random()-.5);
+  const board=document.getElementById('memBoard');board.innerHTML='';
+  cards.forEach((emoji,i)=>{
+    const card=document.createElement('div');
+    card.className='mem-card';card.dataset.emoji=emoji;card.dataset.index=i;
+    card.innerHTML='<div class="mem-card-face">'+emoji+'</div><div class="mem-card-back"></div>';
+    card.addEventListener('click',()=>memFlip(card));
+    board.appendChild(card);
+  });
+}
+
+function memFlip(card){
+  if(memLocked||card.classList.contains('flipped')||card.classList.contains('matched'))return;
+  card.classList.add('flipped');
+  memFlipped.push(card);
+  if(memFlipped.length===2){
+    memLocked=true;memMoves++;
+    document.getElementById('memMoves').textContent=memMoves;
+    const[a,b]=memFlipped;
+    if(a.dataset.emoji===b.dataset.emoji){
+      a.classList.add('matched');b.classList.add('matched');
+      memPairsFound++;document.getElementById('memPairs').textContent=`${memPairsFound}/8`;
+      memFlipped=[];memLocked=false;
+      if(memPairsFound===8){
+        clearInterval(memTimer);
+        document.getElementById('memStatus').textContent=`🎉 Selesai! ${memMoves} gerakan, ${memSeconds}s`;
+      }
+    } else {
+      setTimeout(()=>{a.classList.remove('flipped');b.classList.remove('flipped');memFlipped=[];memLocked=false;},900);
+    }
   }
 }
 
-// ── VOLUME ──
-let scVol = 80;
-function scVolClick(e) {
-  const rect = document.getElementById('sc-vol-track').getBoundingClientRect();
-  scVol = Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100)));
-  applyVolume();
-}
-function scVolTouch(e) {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = document.getElementById('sc-vol-track').getBoundingClientRect();
-  scVol = Math.max(0, Math.min(100, Math.round(((touch.clientX - rect.left) / rect.width) * 100)));
-  applyVolume();
-  document.getElementById('sc-vol-track').addEventListener('touchmove', scVolTouchMove, {passive:false});
-  document.getElementById('sc-vol-track').addEventListener('touchend', ()=>{
-    document.getElementById('sc-vol-track').removeEventListener('touchmove', scVolTouchMove);
-  }, {once:true});
-}
-function scVolTouchMove(e) {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = document.getElementById('sc-vol-track').getBoundingClientRect();
-  scVol = Math.max(0, Math.min(100, Math.round(((touch.clientX - rect.left) / rect.width) * 100)));
-  applyVolume();
-}
-function applyVolume() {
-  audio.volume = scVol / 100;
-  document.getElementById('sc-vol-fill').style.width = scVol + '%';
-  document.getElementById('sc-vol-pct').textContent = scVol + '%';
-}
-
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
-makeVinyl(null);
-buildLocalList();
-applyVolume();
+/* ══ KEYBOARD ══ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')carLeft();
+  else if(e.key==='ArrowRight')carRight();
+  else if(e.key==='ArrowUp'){e.preventDefault();snakeDir(0,-1);}
+  else if(e.key==='ArrowDown'){e.preventDefault();snakeDir(0,1);}
+  else if(e.key==='a'||e.key==='A')snakeDir(-1,0);
+  else if(e.key==='d'||e.key==='D')snakeDir(1,0);
+});
 </script>
 </body>
 </html>
